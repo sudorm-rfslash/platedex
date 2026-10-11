@@ -1,88 +1,89 @@
 # Platedex
 
 > [!WARNING]
-> **Platedex is under heavy development and not ready for use.** Things will break, the database schema may change without a migration path, and there are no releases yet. Don't run it with data you want to keep.
+> **Under heavy development. Not ready for use.** Things break, the database may change without a migration path, and there are no releases yet. Don't use it for data you want to keep.
 
-A self-hosted, installable web app for a small group of friends. You upload phone photos of US license plates. Platedex reads each plate, takes the photo's GPS location and capture time, and links every sighting of the same plate across dates, places and people. Everyone shares one pool.
+Self-hosted license plate log for a group of friends. Upload a phone photo of a US plate. Platedex reads the plate, pulls the GPS location and time from the photo, and links every sighting of that plate across dates, places and people.
 
-## Contents
+## Quick start
 
-- [Features](#features)
-- [Requirements](#requirements)
-- [Install](#install)
-- [Configuration](#configuration)
-- [Sign-in with Pocket ID](#sign-in-with-pocket-id)
-- [Getting photos in](#getting-photos-in)
-- [Using Platedex](#using-platedex)
-- [How it works](#how-it-works)
-- [Maintenance](#maintenance)
-- [Development](#development)
-- [License and credits](#license-and-credits)
+Needs Docker with Compose and an `amd64` host. No GPU needed.
 
-## Features
-
-- **Automatic plate reading.** A detector finds plates, OCR reads them, and a local vision model gives a second opinion when OCR is unsure.
-- **Location and time from the photo.** EXIF GPS and capture time become a sighting on the map. Photos without GPS ask for a pin.
-- **One shared pool.** Every sighting of the same plate, from anyone in the group, is linked on one plate page.
-- **Review queue.** Unsure readings go to Verify, and photos with no readable plate go to Identify.
-- **Search** with wildcards, unknown characters and look-alike fuzzy matching.
-- **Installable app (PWA)** with a camera mode, an Android share target and an iOS Shortcut.
-- **Sign-in** with passwords, Pocket ID (OIDC), or both.
-- **Fully self-hosted.** One container, SQLite, no cloud services. Map tiles default to OpenFreeMap.
-
-## Requirements
-
-- Docker with Compose
-- About 15 GB of disk: a 9 GB image, a 6 GB AI model, plus your photos
-- **Optional:** an NVIDIA GPU with 8 GB of VRAM and `nvidia-container-toolkit` for the AI reader. Without one, OCR still runs on the CPU.
-- A reverse proxy with HTTPS. Phones only allow the camera and location on HTTPS pages.
-
-## Install
-
-1. **GPU only:** install the NVIDIA driver and `nvidia-container-toolkit` on the Docker host. Check that it works:
-   ```sh
-   docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
-   ```
-2. Download the compose file and the env template:
+1. Download the compose file:
    ```sh
    mkdir platedex && cd platedex
    curl -fsSLO https://raw.githubusercontent.com/sudorm-rfslash/platedex/main/docker-compose.yml
-   curl -fsSL -o .env https://raw.githubusercontent.com/sudorm-rfslash/platedex/main/.env.example
    ```
-3. In `.env`, set `PUBLIC_URL` and `SECRET_KEY`. Generate the key with `openssl rand -hex 32`.
-4. Pull and start:
+2. In `docker-compose.yml`, replace the `PUBLIC_URL` and `SECRET_KEY` placeholders. Generate the key with `openssl rand -hex 32`.
+3. Start it:
    ```sh
    docker compose up -d
    ```
-   This pulls `ghcr.io/sudorm-rfslash/platedex:latest` (about 9 GB, `linux/amd64` only).
-5. Open `PUBLIC_URL` and create the first account. It becomes the admin.
-6. On first start the worker downloads the AI model (about 6 GB). Progress shows in **More → Admin**. OCR works in the meantime.
+4. Open `PUBLIC_URL` and create an account. The first account is the admin.
 
-**No GPU?** Delete the `deploy:` block in `docker-compose.yml` and set `VLM_MODE=off`.
-**Already run Ollama?** Set `OLLAMA_URL=http://host:11434`. The built-in Ollama then doesn't start.
-
-### Updating
-
+**Update:**
 ```sh
 docker compose pull && docker compose up -d
 ```
 
-`:latest` follows the `main` branch. Each build is also tagged `:sha-<commit>`, so you can pin one.
+## AI reader (optional)
+
+OCR runs on the CPU and handles most plates. For a second opinion on blurry or unsure plates, point Platedex at an [Ollama](https://ollama.com) server with a GPU. Without one, Platedex runs OCR only.
+
+**Already run Ollama?** Set `OLLAMA_URL` in `docker-compose.yml` (for example `http://192.168.1.20:11434`) and run `docker compose up -d`.
+
+**Add Ollama to this stack** (NVIDIA GPU with about 8 GB of VRAM and `nvidia-container-toolkit`):
+
+1. Add this service under `services:` in `docker-compose.yml`, and `ollama-data:` under `volumes:`:
+   ```yaml
+     ollama:
+       image: ollama/ollama
+       container_name: ollama
+       restart: unless-stopped
+       volumes:
+         - ollama-data:/root/.ollama
+       deploy:
+         resources:
+           reservations:
+             devices:
+               - driver: nvidia
+                 count: 1
+                 capabilities: [gpu]
+   ```
+2. Set `OLLAMA_URL: http://ollama:11434`.
+3. Run `docker compose up -d`.
+
+Platedex downloads the model (`qwen3-vl:8b`, about 6 GB) into Ollama on first start. Progress shows in **More → Admin**.
+
+## Features
+
+- **Reads plates automatically.** A detector and OCR read the plate on the CPU. An optional local AI model double-checks when OCR is unsure.
+- **Location and time from the photo.** Photos without GPS ask you to drop a pin.
+- **One shared pool.** Every sighting of a plate, from anyone, lands on one plate page with a map.
+- **Review queue** for unsure readings and photos with no readable plate.
+- **Installable phone app** with a camera mode, Android share target and iOS Shortcut.
+- **Fully self-hosted.** One container, SQLite, no cloud services. Sign in with passwords, Pocket ID (OIDC), or both.
+
+## Requirements
+
+| | |
+|---|---|
+| **Docker** | Docker Engine with Compose v2, `linux/amd64` |
+| **Disk** | A few GB for the image, plus your photos |
+| **HTTPS** | A reverse proxy with TLS. Phones block the camera and location on plain HTTP. |
+| **AI reader (optional)** | A separate Ollama server, ideally with an NVIDIA GPU (8 GB VRAM). See [AI reader](#ai-reader-optional). |
 
 ## Configuration
 
-Set variables in `.env` or under `environment:` in `docker-compose.yml`. Apply changes with `docker compose up -d`. A plain `docker compose restart` doesn't re-read either file. Empty values count as unset.
+Add variables under `environment:` in `docker-compose.yml`, then run `docker compose up -d`. A plain `docker compose restart` does not re-read the file. Empty values count as unset.
 
-Variables marked **Lockable** can also be changed in **More → Admin**. Setting the variable locks it there:
-
-- The admin panel shows it read-only, with the variable's name.
-- The value is saved to the database at every start. If you remove the variable later, the setting keeps that value and becomes editable again.
+**Lockable** variables can also be changed in **More → Admin**. Setting one locks it: the panel shows it read-only. Remove the variable to unlock it; the last value is kept. Besides the required `PUBLIC_URL` and `SECRET_KEY`, the example `docker-compose.yml` sets `LOCAL_LOGIN_ENABLED`, `OCR_THRESHOLD`, `VLM_MODE` and `MAX_UPLOAD_MB`; delete those lines to manage them in the panel.
 
 ### Required
 
 | Variable | Default | Description |
 |---|---|---|
-| `PUBLIC_URL` | `http://localhost:8080` | The address people open in the browser. Used for OIDC callbacks. Cookies are marked secure when it starts with `https://`. |
+| `PUBLIC_URL` | `http://localhost:8080` | Address people open in the browser. Used for OIDC callbacks and secure cookies. |
 | `SECRET_KEY` | `change-me` | Signs session cookies. Generate with `openssl rand -hex 32`. |
 
 ### Sign-in
@@ -90,10 +91,10 @@ Variables marked **Lockable** can also be changed in **More → Admin**. Setting
 | Variable | Default | Lockable | Description |
 |---|---|---|---|
 | `LOCAL_LOGIN_ENABLED` | `true` | ✓ | Allow username/password sign-in. |
-| `OIDC_ISSUER` | — | ✓ | Pocket ID (or other OIDC provider) issuer URL. |
+| `OIDC_ISSUER` | — | ✓ | OIDC issuer URL (for example Pocket ID). |
 | `OIDC_CLIENT_ID` | — | ✓ | OIDC client ID. |
 | `OIDC_CLIENT_SECRET` | — | ✓ | OIDC client secret. Never sent to the browser. |
-| `OIDC_ADMIN_GROUP` | — | ✓ | Members of this group become Platedex admins. |
+| `OIDC_ADMIN_GROUP` | — | ✓ | Members of this group become admins. |
 | `OIDC_AUTO_CREATE` | `true` | ✓ | Create an account on first OIDC login. |
 | `OIDC_LINK_BY_EMAIL` | `true` | ✓ | Link an OIDC login to an existing account with the same verified email. |
 | `OIDC_BUTTON_LABEL` | `Pocket ID` | ✓ | Text on the sign-in button. |
@@ -103,12 +104,12 @@ Variables marked **Lockable** can also be changed in **More → Admin**. Setting
 
 | Variable | Default | Lockable | Description |
 |---|---|---|---|
-| `VLM_MODE` | — | ✓ | AI second opinion: `auto` (only when OCR is unsure), `always`, or `off`. |
+| `VLM_MODE` | — | ✓ | AI second opinion: `auto` (only when OCR is unsure), `always`, or `off`. Needs `OLLAMA_URL`. |
 | `VLM_MODE_DEFAULT` | `auto` | | Starting value for `VLM_MODE`. Never locks. |
-| `OCR_THRESHOLD` | — | ✓ | Confidence in percent (50–99) below which a reading goes to Verify. |
+| `OCR_THRESHOLD` | — | ✓ | Confidence (50–99 %) below which a reading goes to Verify. |
 | `OCR_THRESHOLD_DEFAULT` | `85` | | Starting value for `OCR_THRESHOLD`. Never locks. |
-| `VLM_MODEL` | `qwen3-vl:8b` | | Ollama vision model. Use `qwen3-vl:4b` if you see out-of-memory errors. |
-| `OLLAMA_URL` | `http://127.0.0.1:11434` | | Ollama server. Pointing it anywhere else disables the built-in Ollama. |
+| `VLM_MODEL` | `qwen3-vl:8b` | | Ollama vision model. Use `qwen3-vl:4b` on out-of-memory errors. |
+| `OLLAMA_URL` | — | | Ollama server for the AI reader, for example `http://ollama:11434`. Unset = OCR only. |
 | `VLM_TIMEOUT` | `120` | | Seconds to wait for one AI reading. |
 
 ### Uploads and import
@@ -116,8 +117,8 @@ Variables marked **Lockable** can also be changed in **More → Admin**. Setting
 | Variable | Default | Lockable | Description |
 |---|---|---|---|
 | `MAX_UPLOAD_MB` | `25` | ✓ | Largest accepted photo (1–500 MB). |
-| `IMPORT_DIR` | — | | Watch folder. Photos dropped here are imported. Mount it in `docker-compose.yml`. |
-| `IMPORT_USER` | — | | Username the watch-folder photos are credited to. |
+| `IMPORT_DIR` | — | | Watch folder inside the container (for example `/import`). Uncomment its volume in `docker-compose.yml`. |
+| `IMPORT_USER` | — | | Username that watch-folder photos are credited to. |
 | `SHORTCUT_URL` | — | ✓ | iCloud link to the iOS Shortcut. See [iOS Shortcut](#ios-shortcut). |
 
 ### Map
@@ -125,68 +126,65 @@ Variables marked **Lockable** can also be changed in **More → Admin**. Setting
 | Variable | Default | Lockable | Description |
 |---|---|---|---|
 | `MAP_STYLE_LIGHT` | OpenFreeMap Positron | ✓ | MapLibre style URL for light mode. |
-| `MAP_STYLE_DARK` | OpenFreeMap Dark | ✓ | MapLibre style URL for dark mode. Point both at self-hosted styles for a fully offline setup. |
+| `MAP_STYLE_DARK` | OpenFreeMap Dark | ✓ | MapLibre style URL for dark mode. |
 
 ### Advanced
 
-These rarely need changing. The Docker image already sets the paths.
+Rarely needed. The image already sets the paths.
 
 | Variable | Default | Description |
 |---|---|---|
-| `DATA_DIR` | `/data` (in Docker) | Database, photos and the Ollama model. |
+| `DATA_DIR` | `/data` | Database, photos and the AI model. |
 | `DATABASE_URL` | SQLite in `DATA_DIR` | SQLAlchemy URL. Only SQLite is tested. |
 | `OCR_DETECTOR_MODEL` | `yolo-v9-s-608-license-plate-end2end` | Plate detector model. |
 | `OCR_MODEL` | `cct-s-v2-global-model` | fast-plate-ocr model. |
 | `OCR_DETECTOR_CONF` | `0.3` | Minimum detector confidence for a plate box. |
 
-## Sign-in with Pocket ID
+## Pocket ID (OIDC)
 
-1. In Pocket ID, create an OIDC client. Callback URL: `<PUBLIC_URL>/api/auth/oidc/callback`.
-2. In Platedex: **More → Admin → Sign-in**. Enter the issuer, client ID and secret, tap **Test**, then **Save**. No restart needed. You can set `OIDC_*` variables instead (see [Sign-in](#sign-in)).
-3. Optional: set an admin group (`OIDC_ADMIN_GROUP`, for example `platedex_admins`). Its members become admins.
+1. In Pocket ID, create an OIDC client with callback URL `<PUBLIC_URL>/api/auth/oidc/callback`.
+2. In Platedex, open **More → Admin → Sign-in**.
+3. Enter the issuer, client ID and secret. Tap **Test**, then **Save**. No restart needed.
 
-New Pocket ID users get an account on first login. Use Pocket ID's allowed groups on the client to control who gets in. People with a password account can link Pocket ID in **More → Linked accounts**. Once your own account is linked, you can turn off password sign-in in **More → Admin**.
+Or set the `OIDC_*` variables in `docker-compose.yml` instead.
 
-**Locked out?** If password sign-in is off and Pocket ID isn't working:
-
-1. Add `LOCAL_LOGIN_ENABLED: "true"` under `environment:` in `docker-compose.yml`.
-2. Run `docker compose up -d` and sign in with your password.
-3. Comment the line out again. Password sign-in stays on.
-
-No password? Run `docker compose exec platedex platedex reset-password NAME`.
+- New users get an account on first login. Control who gets in with Pocket ID's allowed groups.
+- Existing users link Pocket ID in **More → Linked accounts**.
+- Once your own account is linked, you can turn off password sign-in in **More → Admin**.
 
 ## Getting photos in
 
-Phone browsers remove GPS from photos picked from the photo library. Platedex checks every file before upload and asks for a pin or a time when one is missing. These routes keep the location:
+Phone browsers strip GPS from photos picked from the photo library. Platedex checks each file and asks for a pin when GPS is missing. These routes keep it:
 
 | Route | GPS kept? |
 |---|---|
-| **Camera mode** in the app (attaches the phone's location) | Yes |
-| iPhone: Files app → Browse · Android: Files app | Yes |
-| **iOS Shortcut** (see below) | Yes |
-| **Android share sheet** → Platedex (after "Install app") | Usually |
-| Desktop browser, original file from disk | Yes |
-| Photos sent through iMessage / WhatsApp / Signal | Usually no |
-| **Watch folder** (`IMPORT_DIR`): PhotoSync, Syncthing or Nextcloud drop originals there | Yes |
+| **Camera mode** in the app | Yes |
+| **iOS Shortcut** (below) | Yes |
+| Files app (iPhone: Browse, Android: Files) | Yes |
+| Desktop browser, original file | Yes |
+| **Watch folder** fed by PhotoSync, Syncthing or Nextcloud | Yes |
+| **Android share sheet** after "Install app" | Usually |
+| Photos sent through iMessage, WhatsApp or Signal | Usually no |
 
-These are expectations, not measurements. Test your own phones once: upload the same photo through each route and look for the "No location" chip.
+Test your own phone once: upload the same photo through each route and look for the "No location" chip.
 
 ### iOS Shortcut
 
-The Shortcut puts **Platedex** in the iPhone share sheet and uploads originals, so location and time are kept. iPhones only add shortcuts from iCloud links (or signed files), so an admin shares one copy as an iCloud link and pastes it into Platedex. Each person then gets their own token through a setup code. Nobody's token is in the link.
+Adds **Platedex** to the iPhone share sheet and uploads originals, so GPS is kept. An admin publishes one Shortcut as an iCloud link. Each person connects it to their own account with a setup code, so no token is in the link.
 
-**Make the link (once, as admin)**
+**Admin, once (on a Mac):**
 
-On a Mac, from the ready-made template:
-
-1. `cd backend && uv run platedex build-shortcut --out Platedex-unsigned.shortcut`
-2. `shortcuts sign --mode anyone -i Platedex-unsigned.shortcut -o Platedex.shortcut`
-3. `open Platedex.shortcut` and click **Add Shortcut**. When it asks for the setup code, leave it empty.
-4. In Shortcuts, right-click **Platedex** → **Share** → **Copy iCloud Link**.
-5. In Platedex: **More → Admin → iPhone Shortcut**, paste the link, **Save link**.
+1. Build and sign the Shortcut from a clone of this repo:
+   ```sh
+   cd backend && uv run platedex build-shortcut --out Platedex-unsigned.shortcut
+   shortcuts sign --mode anyone -i Platedex-unsigned.shortcut -o Platedex.shortcut
+   ```
+2. `open Platedex.shortcut` → **Add Shortcut**. Leave the setup code empty.
+3. In Shortcuts, right-click **Platedex** → **Share** → **Copy iCloud Link**.
+4. In Platedex, paste it in **More → Admin → iPhone Shortcut** → **Save link**.
 
 <details>
-<summary>No Mac? Build it on an iPhone instead.</summary>
+<summary>No Mac? Build it on an iPhone.</summary>
 
 In Shortcuts tap **+**, name it “Platedex”, and add:
 
@@ -199,90 +197,110 @@ In Shortcuts tap **+**, name it “Platedex”, and add:
    - Request Body **Form**: field `file` (type **File**) = **Repeat Item**, and text field `capture_mode` = `token`.
 5. Tap **ⓘ**: turn on **Show in Share Sheet** and accept **Images**.
 6. Tap **Setup** → **Add New Question**. Pick the Text action's text and ask “Paste your setup code from Platedex”.
-7. **Share** → **Copy iCloud Link**, then paste it in More → Admin as above.
+7. **Share** → **Copy iCloud Link**, then paste it in **More → Admin** as above.
+
+Sharing clears the setup code field, so your own code never goes into the link.
 
 </details>
 
-A field with an import question is cleared when the Shortcut is shared, so your own setup code never goes into the link. To change the Shortcut later, edit your copy, share a new link and save it in More → Admin.
+**Everyone (iPhone, iPad or Mac):**
 
-**Add it (everyone)**
+1. Open **More → API tokens → Set up iPhone Shortcut**. This copies your setup code.
+2. Add the Shortcut and paste the code when asked.
 
-On an iPhone, iPad or Mac: **More → API tokens → Set up iPhone Shortcut**. That creates a token, copies the setup code and links to the Shortcut. Paste the code when Shortcuts asks. The button only shows on Apple devices, and only after an admin has saved the link. Revoking the token in API tokens stops that phone's Shortcut.
+Revoke the token in **API tokens** to disconnect that phone.
 
-## Using Platedex
+## Usage
 
 ### Search
 
 | Query | Finds |
 |---|---|
-| `7AB*` | plates starting with 7AB |
-| `7A?12` | `?` is one unknown character |
-| `~LUVU2` | fuzzy: look-alikes (LUVV2, 1UVU2) plus one or two typos |
-| `grateful` | words in meaning, notes or tags |
+| `7AB*` | Plates starting with 7AB |
+| `7A?12` | `?` matches one unknown character |
+| `~LUVU2` | Look-alikes (LUVV2, 1UVU2) and one or two typos |
+| `grateful` | Words in meaning, notes or tags |
 
 ### Review
 
-- **Verify:** the readers disagree, or confidence is below the threshold. Confirm or fix the reading.
-- **Identify:** no plate found, or nothing readable. Draw a box, type the plate (`?` = unreadable character), mark "no plate", or keep it as an unidentified sighting.
+- **Verify:** the readers disagree or aren't confident. Confirm or fix the reading.
+- **Identify:** no readable plate. Draw a box, type the plate (`?` for unreadable characters), mark "no plate", or keep it unidentified.
 
-## How it works
+## Troubleshooting
 
-One Docker container runs everything, supervised by `supervisord`:
+**Locked out after turning off passwords:**
 
-| Process | Job | Hardware |
-|---|---|---|
-| `api` | FastAPI + the SvelteKit web app on port 8080 | CPU |
-| `worker` | Plate detection (YOLOv9) + OCR (fast-plate-ocr), queue in SQLite | CPU, about 0.1–0.3 s per photo |
-| `ollama` | AI second opinion (`qwen3-vl:8b`) for blurry or unsure plates | NVIDIA GPU |
+1. Set `LOCAL_LOGIN_ENABLED: "true"` under `environment:` in `docker-compose.yml`.
+2. Run `docker compose up -d` and sign in with your password.
+3. Delete the line if you want to manage it in the panel again. Password sign-in stays on.
 
-Data lives in one volume at `/data`: `platedex.db` (SQLite), `photos/` (originals, thumbnails and plate crops) and `ollama/` (the model).
+**Forgot a password:**
+```sh
+docker compose exec platedex platedex reset-password NAME
+```
 
-### Plate reading pipeline
+**AI reader out of memory:** add `VLM_MODEL: qwen3-vl:4b` under `environment:`, then `docker compose up -d`.
 
-1. Find up to 4 plates in the photo (YOLOv9 detector).
-2. Make 4–5 cleaned-up versions of each plate crop (upscale, contrast, sharpen, deskew). OCR reads each one, and the readings are combined character by character into a top-3 list with per-character confidence.
-3. If OCR is unsure, a character could be a look-alike (O/0, I/1, B/8…), or the photo is blurry, the AI reader looks at the crop and the whole photo. It also reads the state.
-4. Routing:
-   - Both readers agree and confidence is above the threshold: saved automatically.
-   - The readers disagree, or confidence is low: goes to **Review → Verify**.
-   - No plate found, or nothing readable: goes to **Review → Identify**.
-5. Photos taken within 5 minutes and about 160 m of each other with the same plate count as one sighting.
+**AI reader not working:** check **More → Admin**. "No Ollama set up" means `OLLAMA_URL` is empty. "Not reachable" means the URL is wrong or Ollama is down.
 
-## Maintenance
+**Camera or location doesn't work on phones:** `PUBLIC_URL` must be HTTPS.
+
+## Backup and admin commands
+
+Back up the whole `platedex-data` volume. Photos are plain files.
 
 ```sh
 docker compose exec platedex platedex backup              # consistent DB copy into /data/backups
-docker compose exec platedex platedex create-admin NAME   # recover access
+docker compose exec platedex platedex create-admin NAME   # new admin account
 docker compose exec platedex platedex reset-password NAME
-docker compose exec platedex platedex seed-demo           # demo plates + users alex/maya/jordan (password platedex-demo)
+docker compose exec platedex platedex seed-demo           # demo data, users alex/maya/jordan, password platedex-demo
 ```
 
-Back up the whole `/data` volume. Photos are plain files.
+## How it works
+
+The Platedex container runs two processes under `supervisord`. The AI reader is an optional, separate Ollama server:
+
+| Process | Job | Runs on |
+|---|---|---|
+| `api` | FastAPI and the SvelteKit web app, port 8080 | CPU |
+| `worker` | Plate detection (YOLOv9) and OCR (fast-plate-ocr), about 0.1–0.3 s per photo | CPU |
+| Ollama (optional, separate) | AI second opinion (`qwen3-vl:8b`) for blurry or unsure plates | NVIDIA GPU |
+
+All data lives in `/data`: `platedex.db` (SQLite) and `photos/`.
+
+**Reading a photo:**
+
+1. Find up to 4 plates.
+2. Read 4–5 cleaned-up versions of each plate and combine them character by character.
+3. If OCR is unsure, a character is a look-alike (O/0, I/1, B/8), or the photo is blurry, the AI reader checks the plate and reads the state.
+4. Confident and in agreement → saved. Unsure → **Verify**. Nothing readable → **Identify**.
+5. Same plate within 5 minutes and about 160 m → one sighting.
 
 ## Development
 
 ```sh
-# backend
+# backend (API on :8080)
 cd backend && uv sync && uv run pytest
 DATA_DIR=./data uv run platedex migrate && DATA_DIR=./data uv run platedex seed-demo
 DATA_DIR=./data VLM_MODE_DEFAULT=off uv run uvicorn platedex.main:app --port 8080 &
 DATA_DIR=./data uv run platedex worker &
+
 # frontend (proxies /api to :8080)
 cd frontend && npm install && npm run dev
 ```
 
-Place names come from GeoNames: `platedex prepare-geo cities5000.zip` (the Docker build does this).
-
-The UI design prototype is in `design/`.
+- Build the image locally: `docker build -t platedex .`
+- Place names: `platedex prepare-geo cities5000.zip` (the Docker build does this).
+- UI design prototype: `design/`.
 
 ## License and credits
 
-Platedex is released under the [MIT License](LICENSE).
+[MIT](LICENSE).
 
-It builds on other people's work, which keeps its own license:
+Platedex builds on these projects, which keep their own licenses:
 
-- **Plate reading:** [fast-alpr](https://github.com/ankandrew/fast-alpr), [fast-plate-ocr](https://github.com/ankandrew/fast-plate-ocr) and [open-image-models](https://github.com/ankandrew/open-image-models) (MIT). The detector and OCR model weights are downloaded at runtime and are not part of this repository.
-- **AI reader:** [Ollama](https://ollama.com) (MIT) running [Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) (Apache-2.0), downloaded on first start.
-- **Place names:** [GeoNames](https://www.geonames.org), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Downloaded at image build time.
-- **Maps:** [MapLibre GL JS](https://maplibre.org) (BSD-3-Clause) with tiles from [OpenFreeMap](https://openfreemap.org). Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors (ODbL).
-- **Time zones:** [timezonefinder](https://github.com/jannikmi/timezonefinder) (MIT), with data derived from OpenStreetMap (ODbL).
+- **Plate reading:** [fast-alpr](https://github.com/ankandrew/fast-alpr), [fast-plate-ocr](https://github.com/ankandrew/fast-plate-ocr), [open-image-models](https://github.com/ankandrew/open-image-models) (MIT). Model weights are downloaded into the Docker image at build time and are not stored in this repository.
+- **AI reader (optional):** [Ollama](https://ollama.com) (MIT) running [Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) (Apache-2.0). Neither is included in the Platedex image.
+- **Place names:** [GeoNames](https://www.geonames.org), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- **Maps:** [MapLibre GL JS](https://maplibre.org) (BSD-3-Clause), tiles from [OpenFreeMap](https://openfreemap.org). Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors (ODbL).
+- **Time zones:** [timezonefinder](https://github.com/jannikmi/timezonefinder) (MIT), data from OpenStreetMap (ODbL).

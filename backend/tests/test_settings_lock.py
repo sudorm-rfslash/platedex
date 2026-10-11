@@ -10,7 +10,7 @@ from platedex.services import appsettings
 
 @pytest.fixture()
 def env(monkeypatch):
-    """Pretend these variables were set in docker-compose.yml / .env."""
+    """Pretend these variables were set in docker-compose.yml."""
     def set_env(**values):
         fake = get_settings().model_copy(update=values)
         object.__setattr__(fake, "__pydantic_fields_set__", set(values))

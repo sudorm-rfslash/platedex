@@ -115,7 +115,7 @@ def main() -> None:
         if n:
             log.info("Requeued %d interrupted jobs", n)
         mode = appsettings.get(db, "vlm_mode")
-    if mode != "off":
+    if mode != "off" and get_settings().ollama_url:
         threading.Thread(target=_pull_model, daemon=True).start()
     get_engine()
     log.info("Worker ready")

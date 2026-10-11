@@ -21,7 +21,7 @@ log = logging.getLogger("platedex")
 def create_app() -> FastAPI:
     s = get_settings()
     if s.secret_key == "change-me":
-        log.warning("SECRET_KEY is not set. Set it in .env so sessions survive restarts and stay private.")
+        log.warning("SECRET_KEY is not set. Set it in docker-compose.yml so sessions survive restarts.")
     app = FastAPI(title="Platedex", docs_url="/api/docs", openapi_url="/api/openapi.json", redoc_url=None)
     app.add_middleware(
         SessionMiddleware,

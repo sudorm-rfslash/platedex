@@ -127,7 +127,7 @@ def crop_url(d: Detection | None) -> str | None:
     if d is None or not d.crop_path:
         return None
     # The crop file name encodes its box, so a re-read gets a new URL and skips stale caches.
-    return f"/api/detections/{d.id}/crop?v={hashlib.sha1(d.crop_path.encode()).hexdigest()[:10]}"
+    return f"/api/detections/{d.id}/crop?v={hashlib.sha1(d.crop_path.encode(), usedforsecurity=False).hexdigest()[:10]}"
 
 
 def review_item_json(db: Session, d: Detection, me: User) -> dict:

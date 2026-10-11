@@ -317,3 +317,19 @@ def test_avif_is_read_and_other_formats_are_refused(client, fake_engine, no_vlm)
     assert client.get(f"/api/photos/{p['id']}/thumb").status_code == 200
     r = client.post("/api/photos", files={"file": ("x.jpg", enc("GIF"), "image/jpeg")})
     assert r.status_code == 415 and "RAW/DNG" in r.json()["detail"]
+
+
+def test_no_ollama_url_means_ocr_only(client, fake_engine, monkeypatch):
+    from platedex.config import get_settings
+    from platedex.pipeline import process
+
+    no_ollama = get_settings().model_copy(update={"ollama_url": None})
+    monkeypatch.setattr(process, "get_settings", lambda: no_ollama)
+    monkeypatch.setattr(vlm_mod, "get_settings", lambda: no_ollama)
+    make_admin(client)
+    fake_engine.mat = probs_for("TX2CAL1", [0.97, 0.95, 0.92, 0.9, 0.93, 0.88, 0.61], alt={6: "I"})
+    calls = vlm_says(monkeypatch, "TX2CALI", 0.88, "CA")
+    upload(client)
+    drain()
+    assert not calls, "without OLLAMA_URL the AI reader is never asked"
+    assert vlm_mod.status()["configured"] is False

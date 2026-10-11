@@ -91,6 +91,8 @@ def parse_response(content: str, model: str) -> VlmReading:
 
 def read_plate(crop_jpeg: bytes, photo_jpeg: bytes) -> VlmReading:
     s = get_settings()
+    if not s.ollama_url:
+        raise VlmUnavailable("OLLAMA_URL is not set")
     body = {
         "model": s.vlm_model,
         "stream": False,
@@ -113,24 +115,27 @@ def read_plate(crop_jpeg: bytes, photo_jpeg: bytes) -> VlmReading:
 def status() -> dict:
     """For /api/health and the admin screen."""
     s = get_settings()
+    if not s.ollama_url:
+        return {"configured": False, "reachable": False, "model": s.vlm_model, "ready": False}
     try:
         r = httpx.get(f"{s.ollama_url.rstrip('/')}/api/tags", timeout=3)
         names = [m.get("name") for m in r.json().get("models", [])]
     except Exception as e:  # noqa: BLE001
-        return {"reachable": False, "model": s.vlm_model, "ready": False, "error": str(e)[:200]}
+        return {"configured": True, "reachable": False, "model": s.vlm_model, "ready": False, "error": str(e)[:200]}
     want = s.vlm_model if ":" in s.vlm_model else f"{s.vlm_model}:latest"
-    return {"reachable": True, "model": s.vlm_model, "ready": want in names}
+    return {"configured": True, "reachable": True, "model": s.vlm_model, "ready": want in names}
 
 
 def ensure_model() -> None:
     """Pull the configured model if Ollama doesn't have it. Blocks until done (can take minutes)."""
     s = get_settings()
     st = status()
-    if not st["reachable"] or st["ready"]:
+    if not st["reachable"] or st["ready"]:  # also covers OLLAMA_URL unset
         return
     log.info("Pulling VLM model %s (first start only)…", s.vlm_model)
     with httpx.stream(
-        "POST", f"{s.ollama_url.rstrip('/')}/api/pull", json={"model": s.vlm_model}, timeout=None
+        "POST", f"{s.ollama_url.rstrip('/')}/api/pull", json={"model": s.vlm_model},
+        timeout=httpx.Timeout(None, connect=10),  # the download takes minutes; only connecting is bounded
     ) as r:
         for line in r.iter_lines():
             if '"error"' in line:

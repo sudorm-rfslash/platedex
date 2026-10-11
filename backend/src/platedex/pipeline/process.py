@@ -8,6 +8,7 @@ import numpy as np
 from PIL import Image
 from sqlalchemy.orm import Session
 
+from ..config import get_settings
 from ..db import utcnow
 from ..models import (
     AUTO,
@@ -128,7 +129,7 @@ def read_region(
     storage.save_crop(crop_rel, crop_view)
 
     thr = float(settings["ocr_threshold"]) / 100
-    mode = settings["vlm_mode"]
+    mode = settings["vlm_mode"] if get_settings().ollama_url else "off"  # no Ollama: OCR only
     vlm: dict[str, Any] | None = None
     vr: vlm_mod.VlmReading | None = None
     if _want_vlm(mode, reading, _ambiguous(mats, engine.alphabet), max(crop_blur, photo.blur or 0), thr, forced_vlm):

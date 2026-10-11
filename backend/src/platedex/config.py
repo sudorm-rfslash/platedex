@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     ocr_detector_model: str = "yolo-v9-s-608-license-plate-end2end"
     ocr_model: str = "cct-s-v2-global-model"
     ocr_detector_conf: float = 0.3
-    ollama_url: str = "http://127.0.0.1:11434"
+    ollama_url: str | None = None  # external Ollama for the AI reader; unset = OCR only
     vlm_model: str = "qwen3-vl:8b"
     vlm_timeout: float = 120.0
     # *_DEFAULT is only the starting value (still changeable in the panel); VLM_MODE / OCR_THRESHOLD lock it.

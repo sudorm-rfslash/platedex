@@ -354,7 +354,7 @@
 					{#if settings.vlm_mode !== 'off'}
 						<p class="vstat" class:bad={!settings.vlm?.ready}>
 							<Icon name={settings.vlm?.ready ? 'check' : 'warn'} size={16} stroke={2.2} />
-							{settings.vlm?.ready ? `${settings.vlm.model} is loaded` : settings.vlm?.reachable ? `${settings.vlm?.model} is still downloading…` : 'Ollama is not reachable — OCR runs alone until it is'}
+							{settings.vlm?.configured === false ? 'No Ollama set up (OLLAMA_URL) — OCR runs alone' : settings.vlm?.ready ? `${settings.vlm.model} is loaded` : settings.vlm?.reachable ? `${settings.vlm?.model} is still downloading…` : 'Ollama is not reachable — OCR runs alone until it is'}
 						</p>
 					{/if}
 				</section>

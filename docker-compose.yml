@@ -1,49 +1,27 @@
-# Platedex — one container: web app + API + plate reader + Ollama (AI second opinion on the GPU).
-# 1. cp .env.example .env   and fill in SECRET_KEY, PUBLIC_URL (and Pocket ID if you use it)
-# 2. docker compose up -d          (update later: docker compose pull && docker compose up -d)
-# 3. open PUBLIC_URL and create the first (admin) account
+# Platedex: https://github.com/sudorm-rfslash/platedex
+# Set PUBLIC_URL and SECRET_KEY below. All settings: README → Configuration.
+# Apply changes with `docker compose up -d`.
 services:
   platedex:
     image: ghcr.io/sudorm-rfslash/platedex:latest
     container_name: platedex
     restart: unless-stopped
-    env_file: .env
-    # Lock admin settings here (or in .env). A setting set here is read-only in More → Admin,
-    # and its value is saved at every start, so it stays after you remove the line.
-    # Apply changes with `docker compose up -d` (a plain restart doesn't reload this file).
-    # Locked out after turning off passwords? Uncomment LOCAL_LOGIN_ENABLED, `docker compose up -d`,
-    # sign in, then comment it out again.
-    # environment:
-    #   LOCAL_LOGIN_ENABLED: "true"
-    #   OIDC_ISSUER: https://id.example.com
-    #   OIDC_CLIENT_ID: platedex
-    #   OIDC_CLIENT_SECRET: change-me
-    #   OIDC_ADMIN_GROUP: platedex_admins
-    #   OIDC_AUTO_CREATE: "true"
-    #   OIDC_LINK_BY_EMAIL: "true"
-    #   OIDC_BUTTON_LABEL: Pocket ID
-    #   OCR_THRESHOLD: "85"
-    #   VLM_MODE: auto
-    #   MAX_UPLOAD_MB: "25"
-    #   MAP_STYLE_LIGHT: https://tiles.openfreemap.org/styles/positron
-    #   MAP_STYLE_DARK: https://tiles.openfreemap.org/styles/dark
-    #   SHORTCUT_URL: https://www.icloud.com/shortcuts/...
+    environment:
+      # Required
+      PUBLIC_URL: https://platedex.example.com  # address people open; HTTPS for phone camera/location
+      SECRET_KEY: change-me                     # generate with: openssl rand -hex 32
+      # Optional AI reader: your Ollama, e.g. http://ollama:11434. Empty = OCR only.
+      OLLAMA_URL: ""
+      # Setting these locks them in More → Admin. Delete a line to manage it in the panel.
+      LOCAL_LOGIN_ENABLED: "true"               # username/password sign-in
+      OCR_THRESHOLD: "85"                       # confidence % below which a reading goes to Verify
+      VLM_MODE: auto                            # AI second opinion: auto, always or off
+      MAX_UPLOAD_MB: "25"                       # largest accepted photo
     ports:
       - "8080:8080"
     volumes:
       - platedex-data:/data
-      # Optional watch folder: point a sync tool (PhotoSync, Syncthing, Nextcloud) here
-      # and set IMPORT_DIR=/import and IMPORT_USER=<username> in .env.
-      # - ./import:/import
-    # NVIDIA GPU for the AI reader. Needs nvidia-container-toolkit on the host.
-    # No GPU? Delete this block and set VLM_MODE=off (OCR still runs on the CPU).
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      # - ./import:/import   # optional watch folder; also set IMPORT_DIR: /import above
 
 volumes:
   platedex-data:
