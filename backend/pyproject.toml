@@ -2,6 +2,7 @@
 name = "platedex"
 version = "0.1.0"
 description = "Self-hosted license plate sighting log"
+license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.20.0",
