@@ -43,22 +43,32 @@ A self-hosted, installable web app for a small group of friends. You upload phon
    ```sh
    docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
    ```
-2. Clone the repo and create your env file:
+2. Download the compose file and the env template:
    ```sh
-   git clone https://github.com/sudorm-rfslash/platedex.git && cd platedex
-   cp .env.example .env
+   mkdir platedex && cd platedex
+   curl -fsSLO https://raw.githubusercontent.com/sudorm-rfslash/platedex/main/docker-compose.yml
+   curl -fsSL -o .env https://raw.githubusercontent.com/sudorm-rfslash/platedex/main/.env.example
    ```
 3. In `.env`, set `PUBLIC_URL` and `SECRET_KEY`. Generate the key with `openssl rand -hex 32`.
-4. Build and start:
+4. Pull and start:
    ```sh
-   docker compose up -d --build
+   docker compose up -d
    ```
-   The first build takes about 10 minutes.
+   This pulls `ghcr.io/sudorm-rfslash/platedex:latest` (about 9 GB, `linux/amd64` only).
 5. Open `PUBLIC_URL` and create the first account. It becomes the admin.
 6. On first start the worker downloads the AI model (about 6 GB). Progress shows in **More → Admin**. OCR works in the meantime.
 
 **No GPU?** Delete the `deploy:` block in `docker-compose.yml` and set `VLM_MODE=off`.
 **Already run Ollama?** Set `OLLAMA_URL=http://host:11434`. The built-in Ollama then doesn't start.
+**Build from source?** Clone the repo, uncomment `build: .` in `docker-compose.yml` and run `docker compose up -d --build`. The first build takes about 10 minutes.
+
+### Updating
+
+```sh
+docker compose pull && docker compose up -d
+```
+
+`:latest` follows the `main` branch. Each build is also tagged `:sha-<commit>`, so you can pin one.
 
 ## Configuration
 

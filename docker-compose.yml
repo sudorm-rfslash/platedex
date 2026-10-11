@@ -1,11 +1,12 @@
 # Platedex — one container: web app + API + plate reader + Ollama (AI second opinion on the GPU).
 # 1. cp .env.example .env   and fill in SECRET_KEY, PUBLIC_URL (and Pocket ID if you use it)
-# 2. docker compose up -d --build
+# 2. docker compose up -d          (update later: docker compose pull && docker compose up -d)
 # 3. open PUBLIC_URL and create the first (admin) account
 services:
   platedex:
-    build: .
-    image: platedex:latest
+    image: ghcr.io/sudorm-rfslash/platedex:latest
+    # Build from source instead: uncomment the next line and run `docker compose up -d --build`
+    # build: .
     container_name: platedex
     restart: unless-stopped
     env_file: .env
