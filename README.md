@@ -60,7 +60,6 @@ A self-hosted, installable web app for a small group of friends. You upload phon
 
 **No GPU?** Delete the `deploy:` block in `docker-compose.yml` and set `VLM_MODE=off`.
 **Already run Ollama?** Set `OLLAMA_URL=http://host:11434`. The built-in Ollama then doesn't start.
-**Build from source?** Clone the repo, uncomment `build: .` in `docker-compose.yml` and run `docker compose up -d --build`. The first build takes about 10 minutes.
 
 ### Updating
 
