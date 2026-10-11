@@ -1,0 +1,32 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-10T12:00:00Z"},
+  "title": "Platedex Prototype",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 844, "title": "1 Login · mobile", "is_interactive": true},
+    "Upload.dc.html": {"x": 470, "y": 0, "w": 390, "h": 844, "title": "2 Upload · mobile", "is_interactive": true},
+    "Review.dc.html": {"x": 940, "y": 0, "w": 390, "h": 844, "title": "3 Review · mobile", "is_interactive": true},
+    "Plates.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 844, "title": "4 Plates · mobile", "is_interactive": true},
+    "Plate.dc.html": {"x": 1880, "y": 0, "w": 390, "h": 844, "title": "5 Plate detail · mobile", "is_interactive": true},
+    "Map.dc.html": {"x": 2350, "y": 0, "w": 390, "h": 844, "title": "6 Map · mobile", "is_interactive": true},
+    "More.dc.html": {"x": 2820, "y": 0, "w": 390, "h": 844, "title": "7 Settings & Admin · mobile", "is_interactive": true},
+    "LoginDesk.dc.html": {"x": 0, "y": 1264, "w": 1440, "h": 900, "title": "1 Login · desktop", "is_interactive": true, "expand": "fill"},
+    "UploadDesk.dc.html": {"x": 1520, "y": 1264, "w": 1440, "h": 1000, "title": "2 Upload · desktop", "is_interactive": true, "expand": "fill"},
+    "ReviewDesk.dc.html": {"x": 3040, "y": 1264, "w": 1440, "h": 980, "title": "3 Review · desktop", "is_interactive": true, "expand": "fill"},
+    "PlatesDesk.dc.html": {"x": 4560, "y": 1264, "w": 1440, "h": 1100, "title": "4 Plates · desktop", "is_interactive": true, "expand": "fill"},
+    "PlateDesk.dc.html": {"x": 6080, "y": 1264, "w": 1440, "h": 1200, "title": "5 Plate detail · desktop", "is_interactive": true, "expand": "fill"},
+    "MapDesk.dc.html": {"x": 7600, "y": 1264, "w": 1440, "h": 940, "title": "6 Map · desktop", "is_interactive": true, "expand": "fill"},
+    "MoreDesk.dc.html": {"x": 9120, "y": 1264, "w": 1440, "h": 1200, "title": "7 Settings & Admin · desktop", "is_interactive": true, "expand": "fill"}
+  },
+  "order": [
+    "Main.dc.html", "Upload.dc.html", "Review.dc.html", "Plates.dc.html", "Plate.dc.html", "Map.dc.html", "More.dc.html",
+    "LoginDesk.dc.html", "UploadDesk.dc.html", "ReviewDesk.dc.html", "PlatesDesk.dc.html", "PlateDesk.dc.html", "MapDesk.dc.html", "MoreDesk.dc.html"
+  ],
+  "notes": {
+    "mob": {"x": 0, "y": -300, "text": "Mobile · 390 px", "kind": "title1", "maxW": 3210},
+    "desk": {"x": 0, "y": 964, "text": "Desktop · 1440 px", "kind": "title1", "maxW": 10560}
+  },
+  "designSystems": []
+}

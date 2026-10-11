@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Platedex · GR8FUL</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+.app{--bg:#F4F5F3;--surface:#FFFFFF;--surface2:#ECEEEB;--ink:#15181C;--muted:#555C64;--line:#D7DBDD;--accent:#1D4ED8;--accent-ink:#FFFFFF;--accent-soft:#E2E9FC;--amber-bg:#FEF3C7;--amber-line:#E9B949;--amber-ink:#6E4300;--ok:#147A39;--ok-soft:#DCF2E3;--bad:#B42318;--badge:#C8291C;--badge-ink:#FFFFFF;--plate-bg:#FFFFFF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(16,24,40,.06),0 6px 20px rgba(16,24,40,.10);--map-bg:#ECEDE7;--map-water:#C9D8E0;--map-park:#DCE5D2;--map-major:#E8D3A2;--map-casing:#D3D4CC;--map-border:#AEB2AC;--map-label:#7B8187;--map-city:#DFE0D8;font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.app[data-theme="dark"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--ok:#5BD68B;--ok-soft:#13301F;--bad:#FF8A7E;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1A1D20;--map-water:#1B2A35;--map-park:#1C251F;--map-major:#4A4231;--map-casing:#23272B;--map-border:#4A5056;--map-label:#79818A;--map-city:#23272B}
+@media (prefers-color-scheme: dark){.app[data-theme="auto"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--ok:#5BD68B;--ok-soft:#13301F;--bad:#FF8A7E;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1A1D20;--map-water:#1B2A35;--map-park:#1C251F;--map-major:#4A4231;--map-casing:#23272B;--map-border:#4A5056;--map-label:#79818A;--map-city:#23272B}}
+.app *{box-sizing:border-box}
+.app a{color:var(--accent)}
+.app h1,.app h2,.app h3,.app p{margin:0}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-feature-settings:"zero" 1;font-variant-numeric:slashed-zero}
+.btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{background:transparent;border-color:transparent}
+.iconbtn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:0;background:transparent;color:var(--ink);cursor:pointer;flex:none}
+.btn:focus-visible,.iconbtn:focus-visible,.app a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.plate{display:inline-flex;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:"zero" 1;font-weight:700;letter-spacing:.06em;background:var(--plate-bg);color:var(--plate-ink);border:1.5px solid var(--plate-ink);border-radius:6px;padding:2px 8px;font-size:15px;white-space:nowrap;line-height:1.25}
+.tag{font-size:13px;font-weight:700;padding:4px 10px;border-radius:8px;background:var(--surface2);color:var(--ink)}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--badge);color:var(--badge-ink);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.ava{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex:none}
+.u-alex{background:#1D4ED8}.u-maya{background:#B4441A}.u-jordan{background:#0F6B63}
+.tabbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line);background:var(--surface);padding-bottom:20px;flex:none}
+.tabbar a{min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none;position:relative}
+.app .tabbar a.on{color:var(--accent)}
+.tabbar .badge{position:absolute;top:4px;left:calc(50% + 5px)}
+.lbl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.m-bg{fill:var(--map-bg)}.m-water{fill:var(--map-water)}.m-park{fill:var(--map-park)}.m-city{fill:var(--map-city)}.m-major{stroke:var(--map-major);fill:none}.m-casing{stroke:var(--map-casing);fill:none}.m-border{stroke:var(--map-border);fill:none;stroke-dasharray:5 4}.m-label{fill:var(--map-label);font:700 10px 'Public Sans',sans-serif;letter-spacing:.06em}
+.route{stroke:var(--accent);fill:none}
+.mk{position:absolute;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);border:2px solid var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.mk.dup{background:#B4441A;color:#fff}
+.crop{width:88px;height:56px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.crop span{background:#F4F4EF;color:#13204A;border:2px solid #13204A;border-radius:4px;font-family:'JetBrains Mono',monospace;font-feature-settings:"zero" 1;font-weight:800;font-size:13px;padding:3px 6px;letter-spacing:.04em}
+.tl{display:flex;gap:12px;align-items:center;padding:10px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.tl.sel{border-color:var(--accent);background:var(--accent-soft)}
+.num{width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.dup{background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;color:var(--ink)}
+.toast{position:absolute;left:16px;right:16px;bottom:100px;background:var(--ink);color:var(--bg);border-radius:12px;padding:8px 8px 8px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);font-weight:600;font-size:14px;z-index:30}
+.toast button{margin-left:auto;background:none;border:0;color:inherit;font:inherit;font-weight:800;text-decoration:underline;min-height:36px;cursor:pointer}
+.ck{width:22px;height:22px;accent-color:var(--accent);flex:none}
+</style>
+</helmet>
+<div class="app" data-theme="{{theme}}" style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column">
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: var(--surface); border-bottom: 1px solid var(--line)">
+<a href="Plates.dc.html" class="btn ghost" style="padding: 0 8px; color: var(--accent)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Plates</a>
+<div style="display: flex; gap: 4px">
+<button class="btn ghost" onClick="{{toggleSplit}}" style="padding: 0 10px">{{splitLabel}}</button>
+<button class="btn ghost" onClick="{{scrollDup}}" style="padding: 0 10px">Merge</button>
+</div>
+</header>
+<div style="flex: 1; overflow-y: auto; padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+<div role="img" aria-label="Texas plate GR8FUL" style="width: 320px; height: 162px; border-radius: 14px; background: #FBFBF8; border: 2px solid #9AA0A6; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 12px 18px 10px">
+<span style="position: absolute; left: 22px; top: 12px; width: 10px; height: 10px; border-radius: 50%; background: #C9CDD1; box-shadow: inset 0 1px 2px rgba(0,0,0,.35)"></span><span style="position: absolute; right: 22px; top: 12px; width: 10px; height: 10px; border-radius: 50%; background: #C9CDD1; box-shadow: inset 0 1px 2px rgba(0,0,0,.35)"></span>
+<span style="font-size: 22px; font-weight: 800; letter-spacing: .3em; color: #13204A; line-height: 1">TEXAS</span>
+<span class="mono" style="font-size: 66px; font-weight: 800; color: #111827; letter-spacing: .04em; line-height: 1">GR8FUL</span>
+<span style="font-size: 10px; font-weight: 700; letter-spacing: .22em; color: #13204A">THE LONE STAR STATE</span>
+</div>
+<div style="text-align: center; display: flex; flex-direction: column; gap: 2px">
+<p style="font-size: 18px"><span class="mono" style="font-weight: 800">GR8FUL</span> <span class="muted">→</span> <span style="font-weight: 700">“grateful”</span></p>
+<p class="muted" style="font-size: 13px">Vanity plate · Texas</p>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div class="card" style="padding: 10px; text-align: center"><p style="font-size: 22px; font-weight: 800">{{nSight}}</p><p class="muted" style="font-size: 12px">sightings</p></div>
+<div class="card" style="padding: 10px; text-align: center"><p style="font-size: 22px; font-weight: 800">3</p><p class="muted" style="font-size: 12px">places</p></div>
+<div class="card" style="padding: 10px; text-align: center"><p style="font-size: 22px; font-weight: 800">3</p><p class="muted" style="font-size: 12px">spotters</p></div>
+</div>
+<p class="muted" style="font-size: 13px; text-align: center; margin-top: -8px">First seen Mar 2 · Last seen Oct 8, 2026</p>
+<section style="display: flex; flex-direction: column; gap: 8px">
+<span class="lbl">Tags</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center"><span class="tag">#vanity</span><span class="tag">#deadhead</span><button class="btn" style="min-height: 34px; padding: 0 10px; font-size: 13px; border-style: dashed">+ Add tag</button></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span class="lbl">Notes</span><button class="btn ghost" style="min-height: 36px; padding: 0 6px; color: var(--accent)">Edit</button></div>
+<p style="font-size: 14.5px">Tie-dye VW bus with Dead stickers. Usually parked on S Congress on weekends. <span class="muted">— maya</span></p>
+</section>
+<sc-if value="{{showDup}}" hint-placeholder-val="{{ true }}">
+<section class="dup" aria-label="Possible duplicate">
+<div style="display: flex; align-items: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber-ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"></path><path d="M12 10v4M12 17h.01"></path></svg><span style="font-weight: 800; color: var(--amber-ink)">Possible duplicates — merge?</span></div>
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><span class="plate">GR8FUL</span><span class="muted" style="font-size: 13px">vs</span><span class="plate">GR8FU<span style="background: var(--amber-bg); color: var(--amber-ink); border-bottom: 2px solid var(--amber-ink)">1</span></span></div>
+<p style="font-size: 13.5px">GR8FU1 has 1 sighting (Sep 30, near Austin, TX, by maya). It differs only by <span class="mono" style="font-weight: 800">L</span> ↔ <span class="mono" style="font-weight: 800">1</span>, a common misread.</p>
+<div style="display: flex; gap: 8px"><button class="btn" onClick="{{dismissDup}}">Not the same</button><button class="btn primary" style="flex: 1" onClick="{{merge}}">Merge into GR8FUL</button></div>
+</section>
+</sc-if>
+<section style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span class="lbl">Route</span><span class="muted" style="font-size: 12.5px">numbered by date</span></div>
+<div style="position: relative; height: 230px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line)">
+<svg width="100%" height="100%" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0">
+<rect class="m-bg" width="400" height="260"></rect>
+<path class="m-water" d="M300 260c20-12 40-20 60-34s30-20 40-24v58z"></path>
+<path class="m-park" d="M150 60h40v30h-40zM60 110h36v26H60zM250 40h30v20h-30z"></path>
+<path class="m-border" stroke-width="1.4" d="M99 0v260M0 83h220M220 0v83M220 83v177M220 140h180"></path>
+<circle class="m-city" cx="325" cy="223" r="16"></circle><circle class="m-city" cx="344" cy="171" r="18"></circle><circle class="m-city" cx="180" cy="26" r="16"></circle><circle class="m-city" cx="161" cy="110" r="10"></circle><circle class="m-city" cx="39" cy="157" r="16"></circle>
+<path class="m-casing" stroke-width="6" d="M180 0 180 26 161 110 152 260M0 120 161 112 400 104M0 168 39 157 200 200 325 223 400 214M344 0 344 171 325 223 320 260"></path>
+<path class="m-major" stroke-width="3.5" d="M180 0 180 26 161 110 152 260M0 120 161 112 400 104M0 168 39 157 200 200 325 223 400 214M344 0 344 171 325 223 320 260"></path>
+<text class="m-label" x="190" y="20">DENVER</text><text class="m-label" x="114" y="128">SANTA FE</text><text class="m-label" x="20" y="182">PHOENIX</text><text class="m-label" x="356" y="160">DALLAS</text><text class="m-label" x="256" y="248">AUSTIN</text>
+<path class="route" stroke-width="2.5" stroke-dasharray="6 4" stroke-linecap="round" stroke-linejoin="round" d="{{routeD}}"></path>
+</svg>
+<sc-for list="{{marks}}" as="m" hint-placeholder-count="6"><span class="mk {{m.cls}}" style="left: {{m.x}}%; top: {{m.y}}%">{{m.n}}</span></sc-for>
+</div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span class="lbl">Sightings</span><span class="muted" style="font-size: 12.5px">newest first</span></div>
+<sc-if value="{{splitting}}" hint-placeholder-val="{{ false }}"><p style="font-size: 13.5px; font-weight: 600; color: var(--accent)">Select the sightings that belong to a different plate.</p></sc-if>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<label class="tl {{r.selCls}}">
+<sc-if value="{{splitting}}" hint-placeholder-val="{{ false }}"><input type="checkbox" class="ck" checked="{{r.sel}}" onChange="{{r.toggle}}" aria-label="Select sighting {{r.n}}"></sc-if>
+<div class="crop" style="background: {{r.car}}"><span style="filter: blur({{r.blur}}px); transform: rotate({{r.rot}}deg)">{{r.read}}</span></div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<div style="display: flex; align-items: center; gap: 6px"><span class="num" style="background: {{r.numBg}}">{{r.n}}</span><span style="font-weight: 700; font-size: 14px">{{r.date}}</span></div>
+<span class="muted" style="font-size: 13px">{{r.time}} · near {{r.place}}</span>
+<span style="font-size: 13px; display: flex; align-items: center; gap: 6px"><span class="ava {{r.uCls}}" style="width: 20px; height: 20px; font-size: 10px">{{r.ui}}</span>{{r.u}}<sc-if value="{{r.isDup}}" hint-placeholder-val="{{ false }}"><span class="muted">· read as GR8FU1</span></sc-if></span>
+</div>
+</label>
+</sc-for>
+<sc-if value="{{splitting}}" hint-placeholder-val="{{ false }}">
+<button class="btn primary" onClick="{{doSplit}}" disabled="{{noneSel}}" style="opacity: {{splitOpacity}}">{{splitDo}}</button>
+</sc-if>
+</section>
+</div>
+<nav class="tabbar" aria-label="Main">
+<a href="Upload.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>Upload</a>
+<a href="Review.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M8 12l3 3 5-6"></path></svg>Review<span class="badge" aria-label="15 pending">15</span></a>
+<a href="Plates.dc.html" class="on" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect><path d="M6.5 12h3M12 12h5.5"></path></svg>Plates</a>
+<a href="Map.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"></path><path d="M9 4v14M15 6v14"></path></svg>Map</a>
+<a href="More.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="19" cy="12" r="1.7"></circle></svg>More</a>
+</nav>
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div class="toast" role="status">{{toast}}<sc-if value="{{canUndo}}" hint-placeholder-val="{{ false }}"><button onClick="{{undo}}">Undo</button></sc-if></div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["auto","light","dark"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+const C = { A: ['Austin, TX', 325, 223], D: ['Dallas, TX', 344, 171], S: ['Santa Fe, NM', 161, 110] };
+const BASE = [
+  { id: 1, d: '2026-03-02', date: 'Mar 2, 2026', time: '8:14 AM', c: 'A', off: [-16, -8], u: 'alex', car: '#5E8F7E', blur: 0.4, rot: -2 },
+  { id: 2, d: '2026-04-19', date: 'Apr 19, 2026', time: '5:31 PM', c: 'A', off: [8, 12], u: 'maya', car: '#6B7D5A', blur: 0, rot: 1 },
+  { id: 3, d: '2026-06-07', date: 'Jun 7, 2026', time: '12:02 PM', c: 'D', off: [0, 0], u: 'jordan', car: '#3F6E86', blur: 0.8, rot: -4 },
+  { id: 4, d: '2026-07-22', date: 'Jul 22, 2026', time: '7:48 PM', c: 'S', off: [0, 0], u: 'alex', car: '#7C6A4E', blur: 1.2, rot: 3 },
+  { id: 5, d: '2026-09-14', date: 'Sep 14, 2026', time: '10:25 AM', c: 'A', off: [18, -14], u: 'maya', car: '#5E8F7E', blur: 0, rot: 0 },
+  { id: 6, d: '2026-10-08', date: 'Oct 8, 2026', time: '6:40 PM', c: 'A', off: [-6, 18], u: 'jordan', car: '#5E8F7E', blur: 0.3, rot: -1 }
+];
+const DUP = { id: 7, d: '2026-09-30', date: 'Sep 30, 2026', time: '3:12 PM', c: 'A', off: [26, 6], u: 'maya', car: '#5E8F7E', blur: 1, rot: 2, dup: true };
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { merged: false, dupHidden: false, removed: [], splitting: false, sel: [], toast: null, undo: null }; }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  flash(msg, undo) { clearTimeout(this.tt); this.setState({ toast: msg, undo: undo || null }); this.tt = setTimeout(() => this.setState({ toast: null, undo: null }), 4000); }
+  renderVals() {
+    const s = this.state;
+    let list = BASE.concat(s.merged ? [DUP] : []).filter((x) => !s.removed.includes(x.id));
+    list.sort((a, b) => a.d.localeCompare(b.d));
+    const pts = list.map((x, k) => ({ ...x, n: k + 1, px: C[x.c][1] + x.off[0], py: C[x.c][2] + x.off[1] }));
+    const routeD = pts.map((p, k) => (k ? 'L' : 'M') + p.px + ' ' + p.py).join(' ');
+    const rows = pts.slice().reverse().map((x) => {
+      const sel = s.sel.includes(x.id);
+      return {
+        ...x, place: C[x.c][0], uCls: 'u-' + x.u, ui: x.u[0].toUpperCase(), read: x.dup ? 'GR8FU1' : 'GR8FUL', isDup: !!x.dup,
+        numBg: x.dup ? '#B4441A' : 'var(--accent)', sel, selCls: sel ? 'sel' : '',
+        toggle: () => this.setState({ sel: sel ? s.sel.filter((i) => i !== x.id) : s.sel.concat([x.id]) })
+      };
+    });
+    return {
+      theme: this.props.theme ?? 'auto',
+      nSight: list.length,
+      showDup: !s.merged && !s.dupHidden,
+      marks: pts.map((p) => ({ n: p.n, x: (p.px / 400) * 100, y: (p.py / 260) * 100, cls: p.dup ? 'dup' : '' })),
+      routeD, rows,
+      splitting: s.splitting, splitLabel: s.splitting ? 'Cancel' : 'Split',
+      noneSel: s.sel.length === 0, splitOpacity: s.sel.length ? 1 : 0.5,
+      splitDo: s.sel.length ? 'Split ' + s.sel.length + (s.sel.length === 1 ? ' sighting' : ' sightings') + ' into a new plate' : 'Select sightings to split',
+      hasToast: !!s.toast, toast: s.toast, canUndo: !!s.undo,
+      toggleSplit: () => this.setState({ splitting: !s.splitting, sel: [] }),
+      scrollDup: () => { if (s.merged || s.dupHidden) this.setState({ dupHidden: false, merged: false }); this.flash('Review the suggested duplicate below the notes'); },
+      merge: () => { this.setState({ merged: true }); this.flash('Merged GR8FU1 into GR8FUL', () => this.setState({ merged: false })); },
+      dismissDup: () => { this.setState({ dupHidden: true }); this.flash('Kept as separate plates', () => this.setState({ dupHidden: false })); },
+      doSplit: () => {
+        if (!s.sel.length) return;
+        const ids = s.sel;
+        this.setState({ removed: s.removed.concat(ids), sel: [], splitting: false });
+        this.flash('Split ' + ids.length + ' into a new plate', () => this.setState({ removed: s.removed }));
+      },
+      undo: () => { if (s.undo) s.undo(); this.setState({ toast: null, undo: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

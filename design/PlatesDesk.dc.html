@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Platedex · Plates (desktop)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+.app{--bg:#F4F5F3;--surface:#FFFFFF;--surface2:#ECEEEB;--ink:#15181C;--muted:#555C64;--line:#D7DBDD;--accent:#1D4ED8;--accent-ink:#FFFFFF;--accent-soft:#E2E9FC;--amber-bg:#FEF3C7;--amber-line:#E9B949;--amber-ink:#6E4300;--badge:#C8291C;--badge-ink:#FFFFFF;--plate-bg:#FFFFFF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(16,24,40,.06),0 6px 20px rgba(16,24,40,.10);--map-bg:#ECEDE7;--map-major:#E3D2A8;--map-border:#B9BDB6;--dot:#1D4ED8;font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.app[data-theme="dark"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1C2023;--map-major:#4A4231;--map-border:#454B51;--dot:#82A6FF}
+@media (prefers-color-scheme: dark){.app[data-theme="auto"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1C2023;--map-major:#4A4231;--map-border:#454B51;--dot:#82A6FF}}
+.app *{box-sizing:border-box}
+.app a{color:var(--accent)}
+.app h1,.app h2,.app h3,.app p{margin:0}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-feature-settings:"zero" 1;font-variant-numeric:slashed-zero}
+.btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.iconbtn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;flex:none}
+.field{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 12px;font:inherit;width:100%}
+.btn:focus-visible,.iconbtn:focus-visible,.field:focus,.app a:focus-visible,.tog:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.plate{display:inline-flex;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:"zero" 1;font-weight:700;letter-spacing:.06em;background:var(--plate-bg);color:var(--plate-ink);border:1.5px solid var(--plate-ink);border-radius:6px;padding:2px 9px;font-size:16px;white-space:nowrap;line-height:1.25}
+.plate.partial{border-style:dashed}
+.stc{font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--muted)}
+.tag{font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;background:var(--surface2);color:var(--muted)}
+.tag.partial{background:var(--amber-bg);color:var(--amber-ink);border:1px dashed var(--amber-line)}
+.count{font-size:13px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--badge);color:var(--badge-ink);font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.ava{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex:none}
+.u-alex{background:#1D4ED8}.u-maya{background:#B4441A}.u-jordan{background:#0F6B63}
+.side{background:var(--surface);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.side a.nav{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:10px;color:var(--ink);text-decoration:none;font-weight:600}
+.side a.nav:hover{background:var(--surface2)}
+.app .side a.nav.on{background:var(--accent-soft);color:var(--accent)}
+.seg{display:inline-flex;background:var(--surface2);border-radius:10px;padding:3px;gap:2px}
+.seg button{min-height:38px;padding:0 14px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.tog{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tog.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.lbl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pop{position:absolute;z-index:12;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:4px;width:420px}
+.ex{display:flex;gap:12px;align-items:center;min-height:44px;padding:4px 8px;border-radius:8px;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;width:100%}
+.ex:hover{background:var(--surface2)}
+.ex code{font-family:'JetBrains Mono',monospace;font-feature-settings:"zero" 1;font-weight:800;font-size:15px;min-width:84px;color:var(--accent)}
+.trow{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1.4fr) 110px 110px 104px;gap:16px;align-items:center;padding:12px 18px;border-top:1px solid var(--line);text-decoration:none;color:var(--ink);min-height:72px}
+.app a.trow{color:var(--ink)}
+a.trow:hover{background:var(--surface2)}
+.frow{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:center;padding:10px 18px;border-top:1px solid var(--line);text-decoration:none;color:var(--ink);min-height:56px}
+.app a.frow{color:var(--ink)}
+a.frow:hover{background:var(--surface2)}
+.th{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-height:40px}
+.mini{position:relative;width:104px;height:60px;border-radius:8px;overflow:hidden;background:var(--map-bg);border:1px solid var(--line)}
+.mini i{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--dot);border:1.5px solid var(--surface);transform:translate(-50%,-50%)}
+.mm-major{stroke:var(--map-major);fill:none}.mm-border{stroke:var(--map-border);fill:none;stroke-dasharray:3 3}
+.fchip{display:inline-flex;align-items:center;gap:2px;min-height:32px;padding:0 4px 0 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:700;border:0;font-family:inherit;cursor:pointer}
+.missing{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:10px;background:var(--amber-bg);border:1px solid var(--amber-line);color:var(--amber-ink);font:inherit;font-size:14px;font-weight:700;cursor:pointer;width:100%;text-align:left}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--accent)}
+</style>
+</helmet>
+<div class="app" data-theme="{{theme}}" style="min-height: 1100px; display: flex; flex-wrap: wrap">
+<nav class="side" aria-label="Main" style="flex: 1 1 240px; max-width: 100%">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 18px"><svg width="40" height="26" viewBox="0 0 84 52" aria-hidden="true"><rect x="3" y="3" width="78" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="4.5"></rect><text x="42" y="35" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="21" letter-spacing="3" fill="currentColor">PDX</text></svg><span style="font-size: 20px; font-weight: 800">Platedex</span></div>
+<a class="nav" href="UploadDesk.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>Upload</a>
+<a class="nav" href="ReviewDesk.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M8 12l3 3 5-6"></path></svg>Review<span class="badge" style="margin-left: auto" aria-label="15 pending">15</span></a>
+<a class="nav on" href="PlatesDesk.dc.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect><path d="M6.5 12h3M12 12h5.5"></path></svg>Plates</a>
+<a class="nav" href="MapDesk.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"></path><path d="M9 4v14M15 6v14"></path></svg>Map</a>
+<a class="nav" href="MoreDesk.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="19" cy="12" r="1.7"></circle></svg>More</a>
+<div style="margin-top: auto; padding: 14px 8px 0; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px"><span class="ava u-alex" style="width: 32px; height: 32px; font-size: 13px">A</span><div style="flex: 1"><p style="font-weight: 700; font-size: 14px">alex</p><p class="muted" style="font-size: 12px">Admin</p></div><a href="LoginDesk.dc.html" style="font-size: 13px; font-weight: 700">Sign out</a></div>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 18px">
+<header style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap"><h1 style="font-size: 28px; font-weight: 800">Plates</h1><span class="muted">{{headline}}</span></div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<div style="position: relative; flex: 1 1 380px; display: flex; gap: 6px">
+<label style="flex: 1; position: relative; display: block"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search plates</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 13px; top: 13px; color: var(--muted)"><circle cx="11" cy="11" r="6.5"></circle><path d="m20 20-4.2-4.2"></path></svg>
+<input class="field mono" style="padding-left: 40px; font-size: 15px" placeholder="GR8FUL · 7AB* · 7A?12 · ~LUVU2 · grateful" value="{{q}}" onChange="{{onQ}}"></label>
+<button class="iconbtn" aria-label="Search syntax help" aria-expanded="{{help}}" onClick="{{toggleHelp}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14"></path><path d="M12 17.5h.01"></path></svg></button>
+<sc-if value="{{help}}" hint-placeholder-val="{{ false }}">
+<div class="pop" role="dialog" aria-label="Search syntax" style="top: 52px; right: 0">
+<span class="lbl" style="padding: 0 8px 4px">Search syntax · click to try</span>
+<button class="ex" onClick="{{ex1}}"><code>7AB*</code><span>Starts with 7AB</span></button>
+<button class="ex" onClick="{{ex2}}"><code>7A?12</code><span><span class="mono" style="font-weight: 800">?</span> is one unknown character</span></button>
+<button class="ex" onClick="{{ex3}}"><code>~LUVU2</code><span>Fuzzy · finds look-alikes like LUVV2, 1UVU2</span></button>
+<button class="ex" onClick="{{ex4}}"><code style="font-family: 'Public Sans', sans-serif">grateful</code><span>Plain words search meaning, notes and tags</span></button>
+</div>
+</sc-if>
+</div>
+<div class="seg" role="group" aria-label="View"><button class="{{stackCls}}" onClick="{{viewStack}}" aria-pressed="{{isStack}}">Stacked by plate</button><button class="{{flatCls}}" onClick="{{viewFlat}}" aria-pressed="{{isFlat}}">All sightings</button></div>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600">Sort<select class="field" style="width: 170px; font-weight: 600" value="{{sort}}" onChange="{{onSort}}"><option value="last">Last seen</option><option value="first">First seen</option><option value="most">Most sightings</option><option value="places">Most places</option><option value="dist">Distance from you</option><option value="az">A–Z</option></select></label>
+</div>
+<sc-if value="{{hasActive}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center"><sc-for list="{{chips}}" as="c" hint-placeholder-count="0"><button class="fchip" onClick="{{c.clear}}" aria-label="Remove filter {{c.label}}">{{c.label}}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M8 8l8 8M16 8l-8 8"></path></svg></button></sc-for><button class="btn" style="min-height: 32px; padding: 0 10px; font-size: 13px" onClick="{{clearFilters}}">Clear all</button></div>
+</sc-if>
+</header>
+<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start">
+<aside class="card" style="flex: 1 1 260px; max-width: 300px; padding: 16px; display: flex; flex-direction: column; gap: 18px" aria-label="Filters">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 16px; font-weight: 800">Filters</h2><a href="MapDesk.dc.html" class="sync"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Synced with Map</a></div>
+<sc-if value="{{showMissing}}" hint-placeholder-val="{{ true }}">
+<button class="missing" onClick="{{showMissingOnly}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"></path><path d="M4 4l16 16"></path></svg><span style="flex: 1">12 sightings missing location</span></button>
+</sc-if>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">Date range</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{ranges}}" as="o" hint-placeholder-count="4"><button class="tog {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+<div style="display: flex; gap: 6px"><label style="flex: 1; font-size: 12.5px; font-weight: 600; display: flex; flex-direction: column; gap: 3px">From<input class="field" type="date" value="2026-01-01" onChange="{{noop}}" style="padding: 0 6px; font-size: 13px"></label><label style="flex: 1; font-size: 12.5px; font-weight: 600; display: flex; flex-direction: column; gap: 3px">To<input class="field" type="date" value="2026-10-10" onChange="{{noop}}" style="padding: 0 6px; font-size: 13px"></label></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">State</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{states}}" as="o" hint-placeholder-count="7"><button class="tog {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}">{{o.label}}</button></sc-for></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">Uploader</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{users}}" as="o" hint-placeholder-count="3"><button class="tog {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}"><span class="ava {{o.uCls}}" style="width: 20px; height: 20px; font-size: 10px">{{o.ui}}</span>{{o.label}}</button></sc-for></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">Tags</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{tags}}" as="o" hint-placeholder-count="6"><button class="tog {{o.cls}}" onClick="{{o.pick}}" aria-pressed="{{o.on}}">{{o.label}}</button></sc-for></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">Seen at least</span><div class="seg" style="align-self: flex-start"><sc-for list="{{mins}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">Map area</span><button class="tog {{areaCls}}" onClick="{{toggleArea}}" style="align-self: flex-start">Within 25 mi of Austin, TX</button><a href="MapDesk.dc.html" style="font-size: 13.5px; font-weight: 700">Draw an area on the map</a></section>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">Location</span><button class="tog {{missCls}}" onClick="{{toggleMissing}}" style="align-self: flex-start">Missing location only</button></section>
+</aside>
+<section class="card" style="flex: 999 1 560px; min-width: 0; overflow: hidden" aria-label="Results">
+<sc-if value="{{isStack}}" hint-placeholder-val="{{ true }}">
+<div class="trow th" style="border-top: 0; min-height: 40px; padding-top: 10px; padding-bottom: 10px"><span>Plate</span><span>Sightings</span><span>First seen</span><span>Last seen</span><span>Where</span></div>
+<sc-for list="{{plates}}" as="p" hint-placeholder-count="10">
+<a href="PlateDesk.dc.html" class="trow">
+<div style="min-width: 0; display: flex; flex-direction: column; gap: 4px"><div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span class="plate {{p.pcls}}">{{p.id}}</span><span class="stc">{{p.st}}</span><sc-if value="{{p.partial}}" hint-placeholder-val="{{ false }}"><span class="tag partial">partial</span></sc-if></div><sc-if value="{{p.hasMean}}" hint-placeholder-val="{{ false }}"><span class="muted" style="font-size: 13px; font-style: italic">“{{p.mean}}”</span></sc-if></div>
+<div><span class="count">{{p.countLabel}}</span></div>
+<span style="font-size: 14px">{{p.firstL}}</span>
+<span style="font-size: 14px">{{p.lastL}}</span>
+<div class="mini" role="img" aria-label="{{p.placesLabel}}"><svg width="104" height="60" viewBox="0 0 100 64" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0"><path class="mm-border" d="M24.7 0v64M0 20.5h60M55 20.5V64M59.7 0v20.5"></path><path class="mm-major" stroke-width="1.6" d="M45 0 45 6.5 40.3 27.2 38 64M0 30 40 28 100 26M0 40 9.7 38.7 50 50 81 55 100 52M86 0 86 42 81.3 55 80 64"></path></svg><sc-for list="{{p.dots}}" as="d" hint-placeholder-count="2"><i style="left: {{d.x}}%; top: {{d.y}}%"></i></sc-for></div>
+</a>
+</sc-for>
+</sc-if>
+<sc-if value="{{isFlat}}" hint-placeholder-val="{{ false }}">
+<div class="frow th" style="border-top: 0; min-height: 40px"><span>Plate</span><span>When</span><span>Where</span><span>Logged by</span></div>
+<sc-for list="{{sightings}}" as="s" hint-placeholder-count="10">
+<a href="PlateDesk.dc.html" class="frow">
+<div style="display: flex; gap: 8px; align-items: center"><span class="plate {{s.pcls}}" style="font-size: 14px">{{s.id}}</span><span class="stc">{{s.st}}</span></div>
+<span style="font-size: 14px">{{s.dateL}}</span>
+<span style="font-size: 14px"><sc-if value="{{s.hasLoc}}" hint-placeholder-val="{{ true }}"><span>{{s.placeL}}</span></sc-if><sc-if value="{{s.noLoc}}" hint-placeholder-val="{{ false }}"><span style="font-weight: 700; color: var(--amber-ink); background: var(--amber-bg); padding: 1px 8px; border-radius: 6px">No location</span></sc-if></span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 14px"><span class="ava {{s.uCls}}">{{s.ui}}</span>{{s.u}}</span>
+</a>
+</sc-for>
+</sc-if>
+<sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 56px 16px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center"><p style="font-weight: 800">No plates match</p><p class="muted" style="font-size: 14px">Try a fuzzy search with ~ or clear filters.</p><button class="btn" onClick="{{clearAll}}">Clear search and filters</button></div>
+</sc-if>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["auto","light","dark"],"default":"auto"},"$preview":{"width":1440,"height":1100}}'>
+const CITY = {
+  A: { name: 'Austin, TX', x: 81.3, y: 85.8, mi: 0 }, D: { name: 'Dallas, TX', x: 86, y: 65.8, mi: 195 },
+  V: { name: 'Denver, CO', x: 45.1, y: 10.1, mi: 920 }, S: { name: 'Santa Fe, NM', x: 40.3, y: 42.5, mi: 630 }, P: { name: 'Phoenix, AZ', x: 9.7, y: 60.4, mi: 870 }
+};
+const U = { a: 'alex', m: 'maya', j: 'jordan' };
+const RAW = [
+  ['GR8FUL', 'TX', 'grateful', 'vanity deadhead', 'Tie-dye VW bus with Dead stickers', '03-02 A a,04-19 A m,06-07 D j,07-22 S a,09-14 A m,10-08 A j'],
+  ['7ABC123', 'CA', '', '', 'White Tacoma with a roof tent', '01-18 P a,02-27 P j,04-03 S m,05-11 V a,06-29 V j,08-02 A m,09-05 A a,10-01 - j'],
+  ['DHK-4821', 'TX', '', 'local', 'Red Civic, probably a neighbor', '02-09 A a,03-15 A a,05-03 D m,06-21 A j,08-30 D a,09-28 - m,10-06 A a'],
+  ['TX2CALI', 'CA', 'Texas to California', 'vanity movers', 'Towing a U-Haul trailer', '03-28 A m,05-16 D a,07-04 P j,08-19 P m,10-04 - a'],
+  ['LUVU2', 'CA', 'love you too', 'vanity', '', '04-02 P j,06-12 S a,08-08 V m,09-30 V j,10-05 - a'],
+  ['NOTMYCAR', 'CO', 'not my car', 'vanity ski', 'Silver Subaru, ski rack', '01-07 V a,02-21 V m,07-30 S j,10-03 - m'],
+  ['KGT-5527', 'NY', '', 'road-trip', '', '05-22 D a,06-02 A m,09-19 - j'],
+  ['BXR7044', 'WA', '', 'road-trip', '', '07-11 V j,08-24 - a'],
+  ['7A?123', 'CA', '', 'partial', 'Bike rack hides the 3rd character', '09-02 P m'],
+  ['CBS8105', 'AZ', '', '', '', '02-14 P a,03-30 P j,06-18 S m,09-24 - a'],
+  ['CXN-S58', 'CO', '', 'ski', '', '04-26 V m,08-15 S a'],
+  ['LFR-308', 'NM', '', '', 'Green chile food truck', '03-09 S j,05-27 S a,08-11 P m,10-02 - j'],
+  ['LNV-9302', 'TX', '', 'local', '', '06-05 D m,07-17 A a,09-09 - m'],
+  ['H8MNDAZ', 'CO', 'hate Mondays', 'vanity', '', '05-05 V a,09-21 - j'],
+  ['SL0WPKE', 'CA', 'slowpoke', 'vanity', 'Zero, not O', '04-14 P m,07-26 A j,10-07 - a']
+];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const dl = (d) => MON[+d.slice(0, 2) - 1] + ' ' + +d.slice(3) + ', 2026';
+const SIGHT = [];
+const PL = RAW.map(([id, st, mean, tags, note, s]) => {
+  const p = { id, st, mean, tags: tags ? tags.split(' ') : [], note, partial: id.includes('?') };
+  p.s = s.split(',').map((x, k) => {
+    const [d, c, u] = x.split(' ');
+    const h = ((+d.slice(3) * 7 + k * 5) % 11) + 8, m = (+d.slice(3) * 13) % 60;
+    const o = { id, st, d, c: c === '-' ? null : c, u: U[u], time: (h > 12 ? h - 12 : h) + ':' + String(m).padStart(2, '0') + (h >= 12 ? ' PM' : ' AM') };
+    SIGHT.push(o);
+    return o;
+  });
+  return p;
+});
+const norm = (x) => x.toUpperCase().replace(/[^A-Z0-9?*]/g, '');
+const fold = (x) => x.replace(/0/g, 'O').replace(/1/g, 'I').replace(/8/g, 'B').replace(/5/g, 'S').replace(/2/g, 'Z').replace(/V/g, 'U');
+function lev(a, b) {
+  const m = []; for (let i = 0; i <= a.length; i++) m[i] = [i];
+  for (let j = 1; j <= b.length; j++) m[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) m[i][j] = Math.min(m[i - 1][j] + 1, m[i][j - 1] + 1, m[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return m[a.length][b.length];
+}
+function match(p, q) {
+  q = q.trim(); if (!q) return true;
+  const id = norm(p.id);
+  if (q[0] === '~') { const t = fold(norm(q.slice(1))); const f = fold(id); return !!t && (lev(f, t) <= 1 || f.includes(t)); }
+  if (/[*?]/.test(q) && !/\s/.test(q)) return new RegExp('^' + norm(q).replace(/\*/g, '.*').replace(/\?/g, '.')).test(id);
+  if (norm(q) && id.includes(norm(q))) return true;
+  return (p.mean + ' ' + p.note + ' ' + p.tags.join(' ')).toLowerCase().includes(q.toLowerCase());
+}
+const RANGES = [['all', 'All time'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['summer', 'Summer 2026']];
+const inRange = (d, r) => r === 'all' ? true : r === '30' ? d >= '09-10' : r === '90' ? d >= '07-12' : d >= '06-01' && d <= '08-31';
+const EMPTY = { range: 'all', states: [], users: [], tags: [], minN: 1, area: false, missing: false };
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { q: '', help: false, view: 'stacked', sort: 'last', f: { ...EMPTY } }; }
+  setF(patch) { this.setState({ f: { ...this.state.f, ...patch } }); }
+  tgl(key, v) { const a = this.state.f[key]; this.setF({ [key]: a.includes(v) ? a.filter((x) => x !== v) : a.concat([v]) }); }
+  renderVals() {
+    const s = this.state, f = s.f;
+    const keepS = (x) => inRange(x.d, f.range) && (!f.users.length || f.users.includes(x.u)) && (!f.area || x.c === 'A') && (!f.missing || !x.c);
+    const plates = PL.map((p) => {
+      const ss = p.s.filter(keepS);
+      if (!ss.length) return null;
+      const cities = [...new Set(ss.filter((x) => x.c).map((x) => x.c))];
+      const n = ss.length, np = cities.length;
+      return {
+        ...p, n, np, first: ss[0].d, last: ss[ss.length - 1].d, firstL: dl(ss[0].d), lastL: dl(ss[ss.length - 1].d),
+        countLabel: n + (n === 1 ? ' sighting' : ' sightings') + ' · ' + np + (np === 1 ? ' place' : ' places'),
+        dist: cities.length ? Math.min(...cities.map((c) => CITY[c].mi)) : 9999,
+        dots: cities.map((c) => ({ x: CITY[c].x, y: CITY[c].y })),
+        placesLabel: 'Seen in ' + (cities.map((c) => CITY[c].name).join(', ') || 'unknown places'),
+        pcls: p.partial ? 'partial' : '', hasMean: !!p.mean
+      };
+    }).filter((p) => p && (!f.states.length || f.states.includes(p.st)) && (!f.tags.length || f.tags.some((t) => p.tags.includes(t))) && p.n >= f.minN && match(p, s.q));
+    const cmp = {
+      last: (a, b) => b.last.localeCompare(a.last), first: (a, b) => b.first.localeCompare(a.first),
+      most: (a, b) => b.n - a.n || b.last.localeCompare(a.last), places: (a, b) => b.np - a.np || b.n - a.n,
+      dist: (a, b) => a.dist - b.dist || b.n - a.n, az: (a, b) => a.id.localeCompare(b.id)
+    }[s.sort];
+    plates.sort(cmp);
+    const ids = new Set(plates.map((p) => p.id));
+    const sightings = SIGHT.filter((x) => ids.has(x.id) && keepS(x)).sort((a, b) => b.d.localeCompare(a.d)).map((x) => ({
+      ...x, pcls: x.id.includes('?') ? 'partial' : '', dateL: dl(x.d) + ' · ' + x.time, hasLoc: !!x.c, noLoc: !x.c,
+      placeL: x.c ? 'near ' + CITY[x.c].name : '', uCls: 'u-' + x.u, ui: x.u[0].toUpperCase()
+    }));
+    const chips = [];
+    if (f.range !== 'all') chips.push({ label: RANGES.find((r) => r[0] === f.range)[1], clear: () => this.setF({ range: 'all' }) });
+    f.states.forEach((v) => chips.push({ label: v, clear: () => this.tgl('states', v) }));
+    f.users.forEach((v) => chips.push({ label: v, clear: () => this.tgl('users', v) }));
+    f.tags.forEach((v) => chips.push({ label: '#' + v, clear: () => this.tgl('tags', v) }));
+    if (f.minN > 1) chips.push({ label: 'Seen ≥ ' + f.minN, clear: () => this.setF({ minN: 1 }) });
+    if (f.area) chips.push({ label: '25 mi of Austin', clear: () => this.setF({ area: false }) });
+    if (f.missing) chips.push({ label: 'Missing location', clear: () => this.setF({ missing: false }) });
+    const set = (q) => () => this.setState({ q, help: false });
+    return {
+      theme: this.props.theme ?? 'auto',
+      headline: plates.length + ' plates · ' + sightings.length + ' sightings · 3 spotters',
+      q: s.q, help: s.help, sort: s.sort,
+      isStack: s.view === 'stacked', isFlat: s.view === 'flat', stackCls: s.view === 'stacked' ? 'on' : '', flatCls: s.view === 'flat' ? 'on' : '',
+      plates, sightings, none: plates.length === 0,
+      chips, hasActive: chips.length > 0, showMissing: !f.missing,
+      ranges: RANGES.map(([k, label]) => ({ label, cls: f.range === k ? 'on' : '', pick: () => this.setF({ range: k }) })),
+      states: ['AZ', 'CA', 'CO', 'NM', 'NY', 'TX', 'WA'].map((v) => ({ label: v, on: f.states.includes(v), cls: f.states.includes(v) ? 'on' : '', pick: () => this.tgl('states', v) })),
+      users: ['alex', 'maya', 'jordan'].map((v) => ({ label: v, ui: v[0].toUpperCase(), uCls: 'u-' + v, on: f.users.includes(v), cls: f.users.includes(v) ? 'on' : '', pick: () => this.tgl('users', v) })),
+      tags: ['vanity', 'deadhead', 'movers', 'ski', 'local', 'road-trip', 'partial'].map((v) => ({ label: '#' + v, on: f.tags.includes(v), cls: f.tags.includes(v) ? 'on' : '', pick: () => this.tgl('tags', v) })),
+      mins: [1, 2, 3, 5].map((v) => ({ label: v === 1 ? 'Any' : v + '+', cls: f.minN === v ? 'on' : '', pick: () => this.setF({ minN: v }) })),
+      areaCls: f.area ? 'on' : '', missCls: f.missing ? 'on' : '',
+      onQ: (e) => this.setState({ q: e.target.value }),
+      toggleHelp: () => this.setState({ help: !s.help }),
+      ex1: set('7AB*'), ex2: set('7A?12'), ex3: set('~LUVU2'), ex4: set('grateful'),
+      viewStack: () => this.setState({ view: 'stacked' }), viewFlat: () => this.setState({ view: 'flat' }),
+      onSort: (e) => this.setState({ sort: e.target.value }),
+      toggleArea: () => this.setF({ area: !f.area }), toggleMissing: () => this.setF({ missing: !f.missing }),
+      showMissingOnly: () => { this.setF({ missing: true }); this.setState({ view: 'flat' }); },
+      clearFilters: () => this.setState({ f: { ...EMPTY } }),
+      clearAll: () => this.setState({ q: '', f: { ...EMPTY } }),
+      noop: () => {}
+    };
+  }
+}
+</script>
+</body>
+</html>

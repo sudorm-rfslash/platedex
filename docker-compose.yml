@@ -1,0 +1,50 @@
+# Platedex — one container: web app + API + plate reader + Ollama (AI second opinion on the GPU).
+# 1. cp .env.example .env   and fill in SECRET_KEY, PUBLIC_URL (and Pocket ID if you use it)
+# 2. docker compose up -d --build
+# 3. open PUBLIC_URL and create the first (admin) account
+services:
+  platedex:
+    build: .
+    image: platedex:latest
+    container_name: platedex
+    restart: unless-stopped
+    env_file: .env
+    # Lock admin settings here (or in .env). A setting set here is read-only in More → Admin,
+    # and its value is saved at every start, so it stays after you remove the line.
+    # Apply changes with `docker compose up -d` (a plain restart doesn't reload this file).
+    # Locked out after turning off passwords? Uncomment LOCAL_LOGIN_ENABLED, `docker compose up -d`,
+    # sign in, then comment it out again.
+    # environment:
+    #   LOCAL_LOGIN_ENABLED: "true"
+    #   OIDC_ISSUER: https://id.example.com
+    #   OIDC_CLIENT_ID: platedex
+    #   OIDC_CLIENT_SECRET: change-me
+    #   OIDC_ADMIN_GROUP: platedex_admins
+    #   OIDC_AUTO_CREATE: "true"
+    #   OIDC_LINK_BY_EMAIL: "true"
+    #   OIDC_BUTTON_LABEL: Pocket ID
+    #   OCR_THRESHOLD: "85"
+    #   VLM_MODE: auto
+    #   MAX_UPLOAD_MB: "25"
+    #   MAP_STYLE_LIGHT: https://tiles.openfreemap.org/styles/positron
+    #   MAP_STYLE_DARK: https://tiles.openfreemap.org/styles/dark
+    #   SHORTCUT_URL: https://www.icloud.com/shortcuts/...
+    ports:
+      - "8080:8080"
+    volumes:
+      - platedex-data:/data
+      # Optional watch folder: point a sync tool (PhotoSync, Syncthing, Nextcloud) here
+      # and set IMPORT_DIR=/import and IMPORT_USER=<username> in .env.
+      # - ./import:/import
+    # NVIDIA GPU for the AI reader. Needs nvidia-container-toolkit on the host.
+    # No GPU? Delete this block and set VLM_MODE=off (OCR still runs on the CPU).
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  platedex-data:

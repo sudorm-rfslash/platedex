@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Platedex · Map</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+.app{--bg:#F4F5F3;--surface:#FFFFFF;--surface2:#ECEEEB;--ink:#15181C;--muted:#555C64;--line:#D7DBDD;--accent:#1D4ED8;--accent-ink:#FFFFFF;--accent-soft:#E2E9FC;--amber-bg:#FEF3C7;--amber-line:#E9B949;--amber-ink:#6E4300;--badge:#C8291C;--badge-ink:#FFFFFF;--plate-bg:#FFFFFF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(16,24,40,.08),0 6px 20px rgba(16,24,40,.14);--map-bg:#ECEDE7;--map-water:#C9D8E0;--map-park:#DCE5D2;--map-major:#E3CF9F;--map-minor:#FFFFFF;--map-border:#A9ADA7;--map-label:#6F757B;--heat:29,78,216;font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.app[data-theme="dark"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1A1D20;--map-water:#1B2A35;--map-park:#1C251F;--map-major:#4A4231;--map-minor:#2A2E33;--map-border:#4E545A;--map-label:#8A9199;--heat:130,166,255}
+@media (prefers-color-scheme: dark){.app[data-theme="auto"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1A1D20;--map-water:#1B2A35;--map-park:#1C251F;--map-major:#4A4231;--map-minor:#2A2E33;--map-border:#4E545A;--map-label:#8A9199;--heat:130,166,255}}
+.app *{box-sizing:border-box}
+.app a{color:var(--accent)}
+.app h1,.app h2,.app h3,.app p{margin:0}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-feature-settings:"zero" 1;font-variant-numeric:slashed-zero}
+.btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.fab{width:48px;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow)}
+.fab.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:focus-visible,.fab:focus-visible,.app a:focus-visible,.cl:focus-visible,.tog:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.plate{display:inline-flex;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:"zero" 1;font-weight:700;letter-spacing:.06em;background:var(--plate-bg);color:var(--plate-ink);border:1.5px solid var(--plate-ink);border-radius:6px;padding:2px 8px;font-size:14px;white-space:nowrap;line-height:1.25}
+.plate.partial{border-style:dashed}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--badge);color:var(--badge-ink);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.count{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.tabbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line);background:var(--surface);padding-bottom:20px;flex:none;position:relative;z-index:6}
+.tabbar a{min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none;position:relative}
+.app .tabbar a.on{color:var(--accent)}
+.tabbar .badge{position:absolute;top:4px;left:calc(50% + 5px)}
+.mp-water{fill:var(--map-water)}.mp-park{fill:var(--map-park)}.mp-major{stroke:var(--map-major);fill:none}.mp-minor{stroke:var(--map-minor);fill:none}.mp-border{stroke:var(--map-border);fill:none;stroke-dasharray:5 4}
+.lab{position:absolute;transform:translate(-50%,0);font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--map-label);pointer-events:none;white-space:nowrap;text-transform:uppercase}
+.cl{position:absolute;transform:translate(-50%,-50%);border-radius:50%;background:var(--accent);color:var(--accent-ink);border:3px solid var(--surface);box-shadow:0 0 0 6px rgba(var(--heat),.18),0 2px 6px rgba(0,0,0,.25);font:inherit;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cl.sel{box-shadow:0 0 0 4px var(--surface),0 0 0 7px var(--accent)}
+.heat{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(220,38,38,.75) 0%,rgba(245,158,11,.55) 35%,rgba(250,204,21,.25) 60%,rgba(250,204,21,0) 72%)}
+.ring{position:absolute;transform:translate(-50%,-50%);border-radius:50%;border:2.5px dashed var(--accent);background:rgba(var(--heat),.10);pointer-events:none}
+.ctr{position:absolute;width:14px;height:14px;transform:translate(-50%,-50%);border-radius:50%;background:var(--surface);border:3px solid var(--accent);pointer-events:none}
+.sheet{position:absolute;left:0;right:0;background:var(--surface);border-radius:18px 18px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.14);z-index:5;display:flex;flex-direction:column;transition:height .22s ease}
+.handle{width:100%;min-height:36px;border:0;background:none;cursor:grab;display:flex;align-items:center;justify-content:center;touch-action:none;flex:none}
+.handle span{width:44px;height:5px;border-radius:3px;background:var(--line)}
+.row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);min-height:52px}
+.app a.row{color:var(--ink)}
+.tog{min-height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.tog.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.fchip{display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:999px;background:var(--surface);color:var(--ink);font-size:13px;font-weight:700;box-shadow:var(--shadow);border:1px solid var(--line);white-space:nowrap}
+.sync{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--accent);background:var(--surface);border-radius:999px;padding:0 10px;min-height:32px;box-shadow:var(--shadow);border:1px solid var(--line);white-space:nowrap}
+.scrim{position:absolute;inset:0;background:rgba(10,12,16,.5);border:0;padding:0;cursor:pointer;z-index:10}
+.fsheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:18px 18px 0 0;z-index:11;padding:8px 16px 28px;display:flex;flex-direction:column;gap:16px}
+.lbl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+</style>
+</helmet>
+<div class="app" data-theme="{{theme}}" style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column">
+<div style="flex: 1; position: relative; overflow: hidden; background: var(--map-bg)">
+<button onClick="{{mapTap}}" aria-label="{{mapAria}}" style="position: absolute; inset: 0; border: 0; padding: 0; background: none; cursor: {{mapCursor}}; display: block; width: 100%; height: 100%">
+<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" style="display: block">
+<path class="mp-water" d="M80 86 L80.5 77 L86 72 L91 69 L100 67 V100 H80 Z"></path>
+<path class="mp-park" d="M40 31h5v6h-5zM30 50h4v5h-4zM60 60h5v4h-5zM20 36h4v4h-4z"></path>
+<g stroke-width="1" vector-effect="non-scaling-stroke"><path class="mp-minor" vector-effect="non-scaling-stroke" stroke-width="1.6" d="M13.3 54.2 L20 40 L27 30 M41.2 45.2 L54 50 L66 52 L78.5 66.9 M82.7 56.9 L92 52 M45.5 29 L30 33 L20 30 M78.5 66.9 L88 60 M41.2 45.2 L48 38 L58 33 M13.3 54.2 L18 66 M60 64 L66 74"></path></g>
+<path class="mp-border" vector-effect="non-scaling-stroke" stroke-width="1.3" d="M27 24 V63 M27 24 H58.9 V40 H27 M54.4 40 V60 M54.4 42 H68.2 V52 L95.5 54 M0 61 L27 63 L41 60 L54 60 L60 66 L66 74 L72 76 L76 82 L80 86"></path>
+<path class="mp-major" vector-effect="non-scaling-stroke" stroke-width="3.2" d="M45.5 0 L45.5 29 L41.2 45.2 L37.3 58.8 L36 63 M0 48 L38 47.7 L68 45 L100 44 M0 56 L13.3 54.2 L25 58 L37.3 58.8 L48 61 L60 64 L75 70.4 L89 69 L100 68 M83 0 L82.7 56.9 L78.5 66.9 L75 70.4 L74 84 M45.5 29 L100 30"></path>
+</svg>
+</button>
+<span class="lab" style="left: 45.5%; top: 31%">Denver</span><span class="lab" style="left: 41.2%; top: 47.4%">Santa Fe</span><span class="lab" style="left: 13.3%; top: 56.6%">Phoenix</span><span class="lab" style="left: 82.7%; top: 59.2%">Dallas</span><span class="lab" style="left: 78.5%; top: 69.2%">Austin</span>
+<span class="lab" style="left: 20%; top: 26%; opacity: .7">Arizona</span><span class="lab" style="left: 43%; top: 52%; opacity: .7">New Mexico</span><span class="lab" style="left: 50%; top: 26%; opacity: .7">Colorado</span><span class="lab" style="left: 66%; top: 63%; opacity: .7">Texas</span>
+<sc-if value="{{heat}}" hint-placeholder-val="{{ false }}"><sc-for list="{{cities}}" as="c" hint-placeholder-count="5"><span class="heat" style="left: {{c.x}}%; top: {{c.y}}%; width: {{c.heatSize}}px; height: {{c.heatSize}}px"></span></sc-for></sc-if>
+<sc-if value="{{radius}}" hint-placeholder-val="{{ false }}"><span class="ring" style="left: {{cx}}%; top: {{cy}}%; width: {{ringPx}}px; height: {{ringPx}}px"></span><span class="ctr" style="left: {{cx}}%; top: {{cy}}%"></span></sc-if>
+<sc-if value="{{showClusters}}" hint-placeholder-val="{{ true }}"><sc-for list="{{cities}}" as="c" hint-placeholder-count="5"><button class="cl {{c.selCls}}" style="left: {{c.x}}%; top: {{c.y}}%; width: {{c.size}}px; height: {{c.size}}px" onClick="{{c.pick}}" aria-label="{{c.aria}}">{{c.n}}</button></sc-for></sc-if>
+
+<div style="position: absolute; left: 12px; right: 12px; top: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 3">
+<div style="display: flex; gap: 8px; align-items: center">
+<button class="btn" onClick="{{openF}}" style="box-shadow: var(--shadow)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>Filters<sc-if value="{{hasF}}" hint-placeholder-val="{{ false }}"><span class="badge" style="background: var(--accent); color: var(--accent-ink)">{{fCount}}</span></sc-if></button>
+<a href="Plates.dc.html" class="sync" aria-label="Filters are synced with the Plates list"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Synced with Plates list</a>
+</div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{fchips}}" as="c" hint-placeholder-count="1"><span class="fchip">{{c}}</span></sc-for></div>
+</div>
+<div style="position: absolute; right: 12px; top: 116px; display: flex; flex-direction: column; gap: 8px; z-index: 3">
+<button class="fab {{heatCls}}" onClick="{{toggleHeat}}" aria-pressed="{{heat}}" aria-label="Heatmap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c2 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-8z"></path></svg></button>
+<button class="fab {{radCls}}" onClick="{{toggleRadius}}" aria-pressed="{{radius}}" aria-label="Draw a radius"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"></circle><circle cx="12" cy="12" r="1.5"></circle><path d="M12 12h8"></path></svg></button>
+<button class="fab" onClick="{{locate}}" aria-label="Center on me"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path><circle cx="12" cy="12" r="7"></circle></svg></button>
+</div>
+<sc-if value="{{radius}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 12px; top: 116px; z-index: 3; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; width: 200px; border: 1px solid var(--line)">
+<span style="font-size: 12.5px; font-weight: 700">Tap the map to move the center</span>
+<label style="display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; font-weight: 700">Radius · {{miles}} mi<input type="range" min="50" max="500" step="25" value="{{miles}}" onChange="{{onMiles}}" style="width: 100%; accent-color: var(--accent); min-height: 32px"></label>
+</div>
+</sc-if>
+
+<div class="sheet" style="bottom: 0; height: {{sheetH}}px" aria-label="Results">
+<button class="handle" onPointerDown="{{hDown}}" onPointerUp="{{hUp}}" onKeyDown="{{hKey}}" aria-label="Resize results sheet: {{snapName}}"><span></span></button>
+<div style="padding: 0 16px 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 style="font-size: 17px; font-weight: 800">{{sheetTitle}}</h2>
+<span class="muted" style="font-size: 13px; white-space: nowrap">{{sheetSub}}</span>
+</div>
+<div style="flex: 1; overflow-y: auto; padding: 0 16px 16px">
+<sc-for list="{{results}}" as="r" hint-placeholder-count="5">
+<a href="Plate.dc.html" class="row"><span class="plate {{r.pcls}}">{{r.id}}</span><span class="muted" style="font-size: 12px; font-weight: 800">{{r.st}}</span><span style="flex: 1"></span><span class="count">{{r.label}}</span></a>
+</sc-for>
+</div>
+</div>
+</div>
+<nav class="tabbar" aria-label="Main">
+<a href="Upload.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>Upload</a>
+<a href="Review.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M8 12l3 3 5-6"></path></svg>Review<span class="badge" aria-label="15 pending">15</span></a>
+<a href="Plates.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect><path d="M6.5 12h3M12 12h5.5"></path></svg>Plates</a>
+<a href="Map.dc.html" class="on" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"></path><path d="M9 4v14M15 6v14"></path></svg>Map</a>
+<a href="More.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="19" cy="12" r="1.7"></circle></svg>More</a>
+</nav>
+<sc-if value="{{fOpen}}" hint-placeholder-val="{{ false }}">
+<button class="scrim" aria-label="Close filters" onClick="{{closeF}}"></button>
+<div class="fsheet" role="dialog" aria-label="Filters">
+<div style="width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto"></div>
+<div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="font-size: 18px; font-weight: 800">Filters</h2><span style="font-size: 12.5px; font-weight: 700; color: var(--accent)">Also applied to the Plates list</span></div>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">Date range</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{ranges}}" as="o" hint-placeholder-count="4"><button class="tog {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">State</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{states}}" as="o" hint-placeholder-count="7"><button class="tog {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px"><span class="lbl">Uploader</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{users}}" as="o" hint-placeholder-count="3"><button class="tog {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></section>
+<a href="Plates.dc.html" style="font-size: 14px; font-weight: 700">Tags, seen ≥ N and more in the Plates list</a>
+<button class="btn primary" onClick="{{closeF}}" style="width: 100%">Show {{nSight}} sightings</button>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["auto","light","dark"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+const CITY = {
+  A: { name: 'Austin, TX', lat: 30.27, lon: -97.74 }, D: { name: 'Dallas, TX', lat: 32.78, lon: -96.8 },
+  V: { name: 'Denver, CO', lat: 39.74, lon: -104.99 }, S: { name: 'Santa Fe, NM', lat: 35.69, lon: -105.94 }, P: { name: 'Phoenix, AZ', lat: 33.45, lon: -112.07 }
+};
+const X = (lon) => ((lon + 115) / 22) * 100, Y = (lat) => ((47 - lat) / 25) * 100;
+const U = { a: 'alex', m: 'maya', j: 'jordan' };
+const RAW = [
+  ['GR8FUL', 'TX', '03-02 A a,04-19 A m,06-07 D j,07-22 S a,09-14 A m,10-08 A j'],
+  ['7ABC123', 'CA', '01-18 P a,02-27 P j,04-03 S m,05-11 V a,06-29 V j,08-02 A m,09-05 A a,10-01 - j'],
+  ['DHK-4821', 'TX', '02-09 A a,03-15 A a,05-03 D m,06-21 A j,08-30 D a,09-28 - m,10-06 A a'],
+  ['TX2CALI', 'CA', '03-28 A m,05-16 D a,07-04 P j,08-19 P m,10-04 - a'],
+  ['LUVU2', 'CA', '04-02 P j,06-12 S a,08-08 V m,09-30 V j,10-05 - a'],
+  ['NOTMYCAR', 'CO', '01-07 V a,02-21 V m,07-30 S j,10-03 - m'],
+  ['KGT-5527', 'NY', '05-22 D a,06-02 A m,09-19 - j'],
+  ['BXR7044', 'WA', '07-11 V j,08-24 - a'],
+  ['7A?123', 'CA', '09-02 P m'],
+  ['CBS8105', 'AZ', '02-14 P a,03-30 P j,06-18 S m,09-24 - a'],
+  ['CXN-S58', 'CO', '04-26 V m,08-15 S a'],
+  ['LFR-308', 'NM', '03-09 S j,05-27 S a,08-11 P m,10-02 - j'],
+  ['LNV-9302', 'TX', '06-05 D m,07-17 A a,09-09 - m'],
+  ['H8MNDAZ', 'CO', '05-05 V a,09-21 - j'],
+  ['SL0WPKE', 'CA', '04-14 P m,07-26 A j,10-07 - a']
+];
+const SIGHT = [];
+RAW.forEach(([id, st, s]) => s.split(',').forEach((x) => { const [d, c, u] = x.split(' '); SIGHT.push({ id, st, d, c: c === '-' ? null : c, u: U[u] }); }));
+const RANGES = [['all', 'All time'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['summer', 'Summer 2026']];
+const inRange = (d, r) => r === 'all' ? true : r === '30' ? d >= '09-10' : r === '90' ? d >= '07-12' : d >= '06-01' && d <= '08-31';
+const SNAP = [{ h: 150, name: 'peek' }, { h: 370, name: 'half' }, { h: 640, name: 'full' }];
+function miles(a, b) {
+  const R = 3959, r = Math.PI / 180, dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { heat: false, radius: true, center: { lat: 30.27, lon: -97.74 }, mi: 250, sel: null, snap: 1, fOpen: false, f: { range: 'all', states: [], users: [] } }; }
+  setF(patch) { this.setState({ f: { ...this.state.f, ...patch } }); }
+  tgl(k, v) { const a = this.state.f[k]; this.setF({ [k]: a.includes(v) ? a.filter((x) => x !== v) : a.concat([v]) }); }
+  renderVals() {
+    const s = this.state, f = s.f;
+    const vis = SIGHT.filter((x) => x.c && inRange(x.d, f.range) && (!f.states.length || f.states.includes(x.st)) && (!f.users.length || f.users.includes(x.u)));
+    const W = 390;
+    const pxPerMile = W / (22 * 54);
+    const cities = Object.keys(CITY).map((k) => {
+      const n = vis.filter((x) => x.c === k).length;
+      return { k, n, x: X(CITY[k].lon), y: Y(CITY[k].lat), size: Math.round(34 + Math.min(n, 24) * 1.1), heatSize: 60 + n * 9, selCls: s.sel === k ? 'sel' : '', aria: n + ' sightings near ' + CITY[k].name, pick: () => this.setState({ sel: s.sel === k ? null : k, radius: false, snap: Math.max(1, s.snap) }) };
+    }).filter((c) => c.n > 0);
+    let pool = vis, title, sub;
+    if (s.radius) {
+      const inC = Object.keys(CITY).filter((k) => miles(s.center, CITY[k]) <= s.mi);
+      pool = vis.filter((x) => inC.includes(x.c));
+      const near = Object.keys(CITY).map((k) => ({ k, d: miles(s.center, CITY[k]) })).sort((a, b) => a.d - b.d)[0];
+      title = 'Within ' + s.mi + ' mi of ' + (near.d < 60 ? CITY[near.k].name : s.center.lat.toFixed(2) + ', ' + s.center.lon.toFixed(2));
+    } else if (s.sel) { pool = vis.filter((x) => x.c === s.sel); title = 'Near ' + CITY[s.sel].name; }
+    else title = 'In view';
+    const by = {};
+    pool.forEach((x) => { (by[x.id] = by[x.id] || { id: x.id, st: x.st, n: 0, last: '' }).n++; if (x.d > by[x.id].last) by[x.id].last = x.d; });
+    const results = Object.values(by).sort((a, b) => b.n - a.n || b.last.localeCompare(a.last)).map((r) => ({ ...r, pcls: r.id.includes('?') ? 'partial' : '', label: r.n + (r.n === 1 ? ' sighting' : ' sightings') }));
+    sub = results.length + (results.length === 1 ? ' plate · ' : ' plates · ') + pool.length + ' sightings';
+    const fchips = [];
+    if (f.range !== 'all') fchips.push(RANGES.find((r) => r[0] === f.range)[1]);
+    if (f.states.length) fchips.push('State: ' + f.states.join(', '));
+    if (f.users.length) fchips.push('By ' + f.users.join(', '));
+    const snap = SNAP[s.snap];
+    return {
+      theme: this.props.theme ?? 'auto',
+      heat: s.heat, radius: s.radius, showClusters: !s.heat,
+      heatCls: s.heat ? 'on' : '', radCls: s.radius ? 'on' : '',
+      cities, cx: X(s.center.lon), cy: Y(s.center.lat), ringPx: Math.round(s.mi * pxPerMile * 2), miles: s.mi,
+      mapAria: s.radius ? 'Map. Tap to move the radius center.' : 'Map of sightings',
+      mapCursor: s.radius ? 'crosshair' : 'default',
+      sheetH: snap.h, snapName: snap.name, sheetTitle: title, sheetSub: sub, results,
+      fchips, hasF: fchips.length > 0, fCount: fchips.length, fOpen: s.fOpen, nSight: vis.length,
+      ranges: RANGES.map(([k, label]) => ({ label, cls: f.range === k ? 'on' : '', pick: () => this.setF({ range: k }) })),
+      states: ['AZ', 'CA', 'CO', 'NM', 'NY', 'TX', 'WA'].map((v) => ({ label: v, cls: f.states.includes(v) ? 'on' : '', pick: () => this.tgl('states', v) })),
+      users: ['alex', 'maya', 'jordan'].map((v) => ({ label: v, cls: f.users.includes(v) ? 'on' : '', pick: () => this.tgl('users', v) })),
+      openF: () => this.setState({ fOpen: true }), closeF: () => this.setState({ fOpen: false }),
+      toggleHeat: () => this.setState({ heat: !s.heat }),
+      toggleRadius: () => this.setState({ radius: !s.radius, sel: null }),
+      locate: () => this.setState({ center: { lat: 30.27, lon: -97.74 } }),
+      onMiles: (e) => this.setState({ mi: +e.target.value }),
+      mapTap: (e) => {
+        if (!s.radius) { this.setState({ sel: null }); return; }
+        const r = e.currentTarget.getBoundingClientRect();
+        const px = ((e.clientX - r.left) / r.width) * 100, py = ((e.clientY - r.top) / r.height) * 100;
+        this.setState({ center: { lon: (px / 100) * 22 - 115, lat: 47 - (py / 100) * 25 } });
+      },
+      hDown: (e) => { this.y0 = e.clientY; },
+      hUp: (e) => {
+        const dy = this.y0 == null ? 0 : e.clientY - this.y0; this.y0 = null;
+        let n = s.snap;
+        if (dy < -30) n = Math.min(2, s.snap + 1); else if (dy > 30) n = Math.max(0, s.snap - 1); else n = (s.snap + 1) % 3;
+        this.setState({ snap: n });
+      },
+      hKey: (e) => { if (e.key === 'ArrowUp') this.setState({ snap: Math.min(2, s.snap + 1) }); if (e.key === 'ArrowDown') this.setState({ snap: Math.max(0, s.snap - 1) }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

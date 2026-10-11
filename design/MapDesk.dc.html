@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Platedex · Map (desktop)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+.app{--bg:#F4F5F3;--surface:#FFFFFF;--surface2:#ECEEEB;--ink:#15181C;--muted:#555C64;--line:#D7DBDD;--accent:#1D4ED8;--accent-ink:#FFFFFF;--accent-soft:#E2E9FC;--badge:#C8291C;--badge-ink:#FFFFFF;--plate-bg:#FFFFFF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(16,24,40,.08),0 6px 20px rgba(16,24,40,.14);--map-bg:#ECEDE7;--map-water:#C9D8E0;--map-park:#DCE5D2;--map-major:#E3CF9F;--map-minor:#FFFFFF;--map-border:#A9ADA7;--map-label:#6F757B;--heat:29,78,216;font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.app[data-theme="dark"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1A1D20;--map-water:#1B2A35;--map-park:#1C251F;--map-major:#4A4231;--map-minor:#2A2E33;--map-border:#4E545A;--map-label:#8A9199;--heat:130,166,255}
+@media (prefers-color-scheme: dark){.app[data-theme="auto"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1A1D20;--map-water:#1B2A35;--map-park:#1C251F;--map-major:#4A4231;--map-minor:#2A2E33;--map-border:#4E545A;--map-label:#8A9199;--heat:130,166,255}}
+.app *{box-sizing:border-box}
+.app a{color:var(--accent)}
+.app h1,.app h2,.app h3,.app p{margin:0}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-feature-settings:"zero" 1;font-variant-numeric:slashed-zero}
+.btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:focus-visible,.app a:focus-visible,.cl:focus-visible,.tog:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.plate{display:inline-flex;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:"zero" 1;font-weight:700;letter-spacing:.06em;background:var(--plate-bg);color:var(--plate-ink);border:1.5px solid var(--plate-ink);border-radius:6px;padding:2px 8px;font-size:15px;white-space:nowrap;line-height:1.25}
+.plate.partial{border-style:dashed}
+.badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--badge);color:var(--badge-ink);font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.count{font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.ava{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex:none}
+.u-alex{background:#1D4ED8}
+.side{background:var(--surface);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.side a.nav{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:10px;color:var(--ink);text-decoration:none;font-weight:600}
+.side a.nav:hover{background:var(--surface2)}
+.app .side a.nav.on{background:var(--accent-soft);color:var(--accent)}
+.mp-water{fill:var(--map-water)}.mp-park{fill:var(--map-park)}.mp-major{stroke:var(--map-major);fill:none}.mp-minor{stroke:var(--map-minor);fill:none}.mp-border{stroke:var(--map-border);fill:none;stroke-dasharray:5 4}
+.lab{position:absolute;transform:translate(-50%,0);font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--map-label);pointer-events:none;white-space:nowrap;text-transform:uppercase}
+.cl{position:absolute;transform:translate(-50%,-50%);border-radius:50%;background:var(--accent);color:var(--accent-ink);border:3px solid var(--surface);box-shadow:0 0 0 7px rgba(var(--heat),.18),0 2px 6px rgba(0,0,0,.25);font:inherit;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cl.sel{box-shadow:0 0 0 4px var(--surface),0 0 0 7px var(--accent)}
+.heat{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(220,38,38,.75) 0%,rgba(245,158,11,.55) 35%,rgba(250,204,21,.25) 60%,rgba(250,204,21,0) 72%)}
+.ring{position:absolute;transform:translate(-50%,-50%);border-radius:50%;border:2.5px dashed var(--accent);background:rgba(var(--heat),.10);pointer-events:none;aspect-ratio:1 / 1}
+.ctr{position:absolute;width:16px;height:16px;transform:translate(-50%,-50%);border-radius:50%;background:var(--surface);border:3px solid var(--accent);pointer-events:none}
+.row{display:flex;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);min-height:52px}
+.app a.row{color:var(--ink)}
+a.row:hover{background:var(--surface2)}
+.tog{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.tog.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.lbl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:var(--accent)}
+.seg{display:inline-flex;background:var(--surface);border-radius:10px;padding:3px;gap:2px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.seg button{min-height:38px;padding:0 14px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:inherit;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+</style>
+</helmet>
+<div class="app" data-theme="{{theme}}" style="min-height: 940px; display: flex; flex-wrap: wrap">
+<nav class="side" aria-label="Main" style="flex: 1 1 240px; max-width: 100%">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 18px"><svg width="40" height="26" viewBox="0 0 84 52" aria-hidden="true"><rect x="3" y="3" width="78" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="4.5"></rect><text x="42" y="35" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="21" letter-spacing="3" fill="currentColor">PDX</text></svg><span style="font-size: 20px; font-weight: 800">Platedex</span></div>
+<a class="nav" href="UploadDesk.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>Upload</a>
+<a class="nav" href="ReviewDesk.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M8 12l3 3 5-6"></path></svg>Review<span class="badge" style="margin-left: auto" aria-label="15 pending">15</span></a>
+<a class="nav" href="PlatesDesk.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect><path d="M6.5 12h3M12 12h5.5"></path></svg>Plates</a>
+<a class="nav on" href="MapDesk.dc.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"></path><path d="M9 4v14M15 6v14"></path></svg>Map</a>
+<a class="nav" href="MoreDesk.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="19" cy="12" r="1.7"></circle></svg>More</a>
+<div style="margin-top: auto; padding: 14px 8px 0; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px"><span class="ava u-alex">A</span><div style="flex: 1"><p style="font-weight: 700; font-size: 14px">alex</p><p class="muted" style="font-size: 12px">Admin</p></div><a href="LoginDesk.dc.html" style="font-size: 13px; font-weight: 700">Sign out</a></div>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap">
+<div style="flex: 999 1 480px; min-width: 0; min-height: 600px; position: relative; overflow: hidden; background: var(--map-bg)">
+<button onClick="{{mapTap}}" aria-label="{{mapAria}}" style="position: absolute; inset: 0; border: 0; padding: 0; background: none; cursor: {{mapCursor}}; display: block; width: 100%; height: 100%">
+<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" style="display: block"><g transform="translate(0 -22.22) scale(1 1.3889)">
+<path class="mp-water" d="M80 86 L80.5 77 L86 72 L91 69 L100 67 V100 H80 Z"></path>
+<path class="mp-park" d="M40 31h5v6h-5zM30 50h4v5h-4zM60 60h5v4h-5zM20 36h4v4h-4z"></path>
+<path class="mp-minor" vector-effect="non-scaling-stroke" stroke-width="1.8" d="M13.3 54.2 L20 40 L27 30 M41.2 45.2 L54 50 L66 52 L78.5 66.9 M82.7 56.9 L92 52 M45.5 29 L30 33 L20 30 M78.5 66.9 L88 60 M41.2 45.2 L48 38 L58 33 M13.3 54.2 L18 66 M60 64 L66 74"></path>
+<path class="mp-border" vector-effect="non-scaling-stroke" stroke-width="1.3" d="M27 24 V63 M27 24 H58.9 V40 H27 M54.4 40 V60 M54.4 42 H68.2 V52 L95.5 54 M0 61 L27 63 L41 60 L54 60 L60 66 L66 74 L72 76 L76 82 L80 86"></path>
+<path class="mp-major" vector-effect="non-scaling-stroke" stroke-width="3.6" d="M45.5 0 L45.5 29 L41.2 45.2 L37.3 58.8 L36 63 M0 48 L38 47.7 L68 45 L100 44 M0 56 L13.3 54.2 L25 58 L37.3 58.8 L48 61 L60 64 L75 70.4 L89 69 L100 68 M83 0 L82.7 56.9 L78.5 66.9 L75 70.4 L74 84 M45.5 29 L100 30"></path>
+</g></svg>
+</button>
+<span class="lab" style="left: 45.5%; top: 20.8%">Denver</span><span class="lab" style="left: 41.2%; top: 43.6%">Santa Fe</span><span class="lab" style="left: 13.3%; top: 56.4%">Phoenix</span><span class="lab" style="left: 82.7%; top: 60%">Dallas</span><span class="lab" style="left: 78.5%; top: 74%">Austin</span>
+<span class="lab" style="left: 18%; top: 14%; opacity: .7">Arizona</span><span class="lab" style="left: 44%; top: 50%; opacity: .7">New Mexico</span><span class="lab" style="left: 52%; top: 12%; opacity: .7">Colorado</span><span class="lab" style="left: 66%; top: 66%; opacity: .7">Texas</span>
+<sc-if value="{{heat}}" hint-placeholder-val="{{ false }}"><sc-for list="{{cities}}" as="c" hint-placeholder-count="5"><span class="heat" style="left: {{c.x}}%; top: {{c.y}}%; width: {{c.heatSize}}px; height: {{c.heatSize}}px"></span></sc-for></sc-if>
+<sc-if value="{{radius}}" hint-placeholder-val="{{ false }}"><span class="ring" style="left: {{cx}}%; top: {{cy}}%; width: {{ringW}}%"></span><span class="ctr" style="left: {{cx}}%; top: {{cy}}%"></span></sc-if>
+<sc-if value="{{showClusters}}" hint-placeholder-val="{{ true }}"><sc-for list="{{cities}}" as="c" hint-placeholder-count="5"><button class="cl {{c.selCls}}" style="left: {{c.x}}%; top: {{c.y}}%; width: {{c.size}}px; height: {{c.size}}px" onClick="{{c.pick}}" aria-label="{{c.aria}}">{{c.n}}</button></sc-for></sc-if>
+<div style="position: absolute; left: 16px; top: 16px; display: flex; gap: 10px; flex-wrap: wrap; z-index: 3">
+<div class="seg" role="group" aria-label="Map layer"><button class="{{clCls}}" onClick="{{showCl}}">Clusters</button><button class="{{heatCls}}" onClick="{{showHeat}}">Heatmap</button></div>
+<button class="btn {{radCls}}" onClick="{{toggleRadius}}" aria-pressed="{{radius}}" style="box-shadow: var(--shadow)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"></circle><circle cx="12" cy="12" r="1.5"></circle><path d="M12 12h8"></path></svg>Draw radius</button>
+</div>
+<sc-if value="{{radius}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 16px; bottom: 16px; z-index: 3; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 10px 14px; display: flex; align-items: center; gap: 14px; border: 1px solid var(--line); flex-wrap: wrap">
+<span style="font-size: 13.5px; font-weight: 700">Click the map to move the center</span>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700">Radius<input type="range" min="50" max="500" step="25" value="{{miles}}" onChange="{{onMiles}}" style="width: 160px; accent-color: var(--accent); min-height: 32px"><span class="mono">{{miles}} mi</span></label>
+</div>
+</sc-if>
+</div>
+<aside style="flex: 1 1 340px; max-width: 100%; background: var(--surface); border-left: 1px solid var(--line); display: flex; flex-direction: column" aria-label="Results and filters">
+<div style="padding: 20px 20px 12px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 20px; font-weight: 800">{{sheetTitle}}</h1>
+<p class="muted" style="font-size: 14px">{{sheetSub}}</p>
+</div>
+<div style="flex: 1; overflow-y: auto; padding: 4px 16px 12px; max-height: 470px">
+<sc-for list="{{results}}" as="r" hint-placeholder-count="6"><a href="PlateDesk.dc.html" class="row"><span class="plate {{r.pcls}}">{{r.id}}</span><span class="muted" style="font-size: 12px; font-weight: 800">{{r.st}}</span><span style="flex: 1"></span><span class="count">{{r.label}}</span></a></sc-for>
+</div>
+<section style="padding: 16px 20px 24px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 14px; background: var(--bg)">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-weight: 800">Filters</span><a href="PlatesDesk.dc.html" class="sync"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Synced with Plates list</a></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span class="lbl">Date range</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{ranges}}" as="o" hint-placeholder-count="4"><button class="tog {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span class="lbl">State</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{states}}" as="o" hint-placeholder-count="7"><button class="tog {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span class="lbl">Uploader</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{users}}" as="o" hint-placeholder-count="3"><button class="tog {{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+<a href="PlatesDesk.dc.html" style="font-size: 13.5px; font-weight: 700">Tags, seen ≥ N and missing location live in the Plates list</a>
+</section>
+</aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["auto","light","dark"],"default":"auto"},"$preview":{"width":1440,"height":940}}'>
+const CITY = {
+  A: { name: 'Austin, TX', lat: 30.27, lon: -97.74 }, D: { name: 'Dallas, TX', lat: 32.78, lon: -96.8 },
+  V: { name: 'Denver, CO', lat: 39.74, lon: -104.99 }, S: { name: 'Santa Fe, NM', lat: 35.69, lon: -105.94 }, P: { name: 'Phoenix, AZ', lat: 33.45, lon: -112.07 }
+};
+const X = (lon) => ((lon + 115) / 22) * 100, Y = (lat) => ((43 - lat) / 18) * 100;
+const U = { a: 'alex', m: 'maya', j: 'jordan' };
+const RAW = [
+  ['GR8FUL', 'TX', '03-02 A a,04-19 A m,06-07 D j,07-22 S a,09-14 A m,10-08 A j'],
+  ['7ABC123', 'CA', '01-18 P a,02-27 P j,04-03 S m,05-11 V a,06-29 V j,08-02 A m,09-05 A a,10-01 - j'],
+  ['DHK-4821', 'TX', '02-09 A a,03-15 A a,05-03 D m,06-21 A j,08-30 D a,09-28 - m,10-06 A a'],
+  ['TX2CALI', 'CA', '03-28 A m,05-16 D a,07-04 P j,08-19 P m,10-04 - a'],
+  ['LUVU2', 'CA', '04-02 P j,06-12 S a,08-08 V m,09-30 V j,10-05 - a'],
+  ['NOTMYCAR', 'CO', '01-07 V a,02-21 V m,07-30 S j,10-03 - m'],
+  ['KGT-5527', 'NY', '05-22 D a,06-02 A m,09-19 - j'],
+  ['BXR7044', 'WA', '07-11 V j,08-24 - a'],
+  ['7A?123', 'CA', '09-02 P m'],
+  ['CBS8105', 'AZ', '02-14 P a,03-30 P j,06-18 S m,09-24 - a'],
+  ['CXN-S58', 'CO', '04-26 V m,08-15 S a'],
+  ['LFR-308', 'NM', '03-09 S j,05-27 S a,08-11 P m,10-02 - j'],
+  ['LNV-9302', 'TX', '06-05 D m,07-17 A a,09-09 - m'],
+  ['H8MNDAZ', 'CO', '05-05 V a,09-21 - j'],
+  ['SL0WPKE', 'CA', '04-14 P m,07-26 A j,10-07 - a']
+];
+const SIGHT = [];
+RAW.forEach(([id, st, s]) => s.split(',').forEach((x) => { const [d, c, u] = x.split(' '); SIGHT.push({ id, st, d, c: c === '-' ? null : c, u: U[u] }); }));
+const RANGES = [['all', 'All time'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['summer', 'Summer 2026']];
+const inRange = (d, r) => r === 'all' ? true : r === '30' ? d >= '09-10' : r === '90' ? d >= '07-12' : d >= '06-01' && d <= '08-31';
+function miles(a, b) {
+  const R = 3959, r = Math.PI / 180, dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { heat: false, radius: true, center: { lat: 30.27, lon: -97.74 }, mi: 250, sel: null, f: { range: 'all', states: [], users: [] } }; }
+  setF(patch) { this.setState({ f: { ...this.state.f, ...patch } }); }
+  tgl(k, v) { const a = this.state.f[k]; this.setF({ [k]: a.includes(v) ? a.filter((x) => x !== v) : a.concat([v]) }); }
+  renderVals() {
+    const s = this.state, f = s.f;
+    const vis = SIGHT.filter((x) => x.c && inRange(x.d, f.range) && (!f.states.length || f.states.includes(x.st)) && (!f.users.length || f.users.includes(x.u)));
+    const cities = Object.keys(CITY).map((k) => {
+      const n = vis.filter((x) => x.c === k).length;
+      return { k, n, x: X(CITY[k].lon), y: Y(CITY[k].lat), size: Math.round(38 + Math.min(n, 24) * 1.3), heatSize: 80 + n * 12, selCls: s.sel === k ? 'sel' : '', aria: n + ' sightings near ' + CITY[k].name, pick: () => this.setState({ sel: s.sel === k ? null : k, radius: false }) };
+    }).filter((c) => c.n > 0);
+    let pool = vis, title;
+    if (s.radius) {
+      const inC = Object.keys(CITY).filter((k) => miles(s.center, CITY[k]) <= s.mi);
+      pool = vis.filter((x) => inC.includes(x.c));
+      const near = Object.keys(CITY).map((k) => ({ k, d: miles(s.center, CITY[k]) })).sort((a, b) => a.d - b.d)[0];
+      title = 'Within ' + s.mi + ' mi of ' + (near.d < 60 ? CITY[near.k].name : s.center.lat.toFixed(2) + ', ' + s.center.lon.toFixed(2));
+    } else if (s.sel) { pool = vis.filter((x) => x.c === s.sel); title = 'Near ' + CITY[s.sel].name; }
+    else title = 'All sightings in view';
+    const by = {};
+    pool.forEach((x) => { (by[x.id] = by[x.id] || { id: x.id, st: x.st, n: 0, last: '' }).n++; if (x.d > by[x.id].last) by[x.id].last = x.d; });
+    const results = Object.values(by).sort((a, b) => b.n - a.n || b.last.localeCompare(a.last)).map((r) => ({ ...r, pcls: r.id.includes('?') ? 'partial' : '', label: r.n + (r.n === 1 ? ' sighting' : ' sightings') }));
+    return {
+      theme: this.props.theme ?? 'auto',
+      heat: s.heat, radius: s.radius, showClusters: !s.heat,
+      clCls: s.heat ? '' : 'on', heatCls: s.heat ? 'on' : '', radCls: s.radius ? 'on' : '',
+      cities, cx: X(s.center.lon), cy: Y(s.center.lat), ringW: ((2 * s.mi) / (22 * 54)) * 100, miles: s.mi,
+      mapAria: s.radius ? 'Map. Click to move the radius center.' : 'Map of sightings', mapCursor: s.radius ? 'crosshair' : 'default',
+      sheetTitle: title, sheetSub: results.length + (results.length === 1 ? ' plate · ' : ' plates · ') + pool.length + ' sightings', results,
+      ranges: RANGES.map(([k, label]) => ({ label, cls: f.range === k ? 'on' : '', pick: () => this.setF({ range: k }) })),
+      states: ['AZ', 'CA', 'CO', 'NM', 'NY', 'TX', 'WA'].map((v) => ({ label: v, cls: f.states.includes(v) ? 'on' : '', pick: () => this.tgl('states', v) })),
+      users: ['alex', 'maya', 'jordan'].map((v) => ({ label: v, cls: f.users.includes(v) ? 'on' : '', pick: () => this.tgl('users', v) })),
+      showCl: () => this.setState({ heat: false }), showHeat: () => this.setState({ heat: true }),
+      toggleRadius: () => this.setState({ radius: !s.radius, sel: null }),
+      onMiles: (e) => this.setState({ mi: +e.target.value }),
+      mapTap: (e) => {
+        if (!s.radius) { this.setState({ sel: null }); return; }
+        const r = e.currentTarget.getBoundingClientRect();
+        const px = ((e.clientX - r.left) / r.width) * 100, py = ((e.clientY - r.top) / r.height) * 100;
+        this.setState({ center: { lon: (px / 100) * 22 - 115, lat: 43 - (py / 100) * 18 } });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

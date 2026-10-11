@@ -1,0 +1,54 @@
+[project]
+name = "platedex"
+version = "0.1.0"
+description = "Self-hosted license plate sighting log"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.20.0",
+    "argon2-cffi>=25.1.0",
+    "authlib>=1.8.0",
+    "fast-alpr[onnx]>=0.4.0",
+    "fastapi>=0.143.0",
+    "httpx>=0.28.1",
+    "itsdangerous>=2.2.0",
+    "pillow>=12.3.0",
+    "pillow-heif>=1.8.0",
+    "pydantic-settings>=2.15.0",
+    "python-multipart>=0.0.32",
+    "rapidfuzz>=3.14.6",
+    "sqlalchemy>=2",
+    "supervisor>=4.3.0",
+    "timezonefinder>=9.0.0",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[project.scripts]
+platedex = "platedex.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.22,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.17.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["ignore::DeprecationWarning:fastapi.testclient", "ignore:Using `httpx`"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/platedex/seed.py" = ["E501"]
+"src/platedex/migrations/*" = ["E501", "I001", "UP"]

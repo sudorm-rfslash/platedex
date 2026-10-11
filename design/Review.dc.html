@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Platedex · Review</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+.app{--bg:#F4F5F3;--surface:#FFFFFF;--surface2:#ECEEEB;--ink:#15181C;--muted:#555C64;--line:#D7DBDD;--accent:#1D4ED8;--accent-ink:#FFFFFF;--accent-soft:#E2E9FC;--amber-bg:#FEF3C7;--amber-line:#E9B949;--amber-ink:#6E4300;--ok:#147A39;--ok-soft:#DCF2E3;--warn:#9A5200;--warn-soft:#FDEBD0;--bad:#B42318;--bad-soft:#FCE5E2;--badge:#C8291C;--badge-ink:#FFFFFF;--plate-bg:#FFFFFF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(16,24,40,.06),0 6px 20px rgba(16,24,40,.10);font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.app[data-theme="dark"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--ok:#5BD68B;--ok-soft:#13301F;--warn:#F2A73B;--warn-soft:#38270E;--bad:#FF8A7E;--bad-soft:#3A1714;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45)}
+@media (prefers-color-scheme: dark){.app[data-theme="auto"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--ok:#5BD68B;--ok-soft:#13301F;--warn:#F2A73B;--warn-soft:#38270E;--bad:#FF8A7E;--bad-soft:#3A1714;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45)}}
+.app *{box-sizing:border-box}
+.app a{color:var(--accent)}
+.app h1,.app h2,.app h3,.app p{margin:0}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-feature-settings:"zero" 1;font-variant-numeric:slashed-zero}
+.btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--bad)}
+.btn.block{width:100%}
+.iconbtn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;flex:none}
+.field{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 12px;font:inherit;width:100%}
+.btn:focus-visible,.iconbtn:focus-visible,.field:focus,.app a:focus-visible,.cand:focus-visible,.rtab:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--badge);color:var(--badge-ink);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.ava{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex:none}
+.u-alex{background:#1D4ED8}.u-maya{background:#B4441A}.u-jordan{background:#0F6B63}
+.tabbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line);background:var(--surface);padding-bottom:20px;flex:none}
+.tabbar a{min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none;position:relative}
+.app .tabbar a.on{color:var(--accent)}
+.tabbar .badge{position:absolute;top:4px;left:calc(50% + 5px)}
+.seg{display:flex;background:var(--surface2);border-radius:10px;padding:3px;gap:2px}
+.seg button{flex:1;min-height:38px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.rtab{flex:1;min-height:46px;border:0;background:none;font:inherit;font-weight:700;font-size:15px;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border-bottom:3px solid transparent}
+.rtab.on{color:var(--ink);border-bottom-color:var(--accent)}
+.rtab .badge{background:var(--surface2);color:var(--ink)}
+.rtab.on .badge{background:var(--badge);color:var(--badge-ink)}
+.lockn{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:600;color:var(--muted);background:var(--surface2);border-radius:999px;padding:3px 10px 3px 8px}
+.cbox{min-width:32px;height:44px;padding:0 3px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;font-family:'JetBrains Mono',monospace;font-feature-settings:"zero" 1;font-weight:800;font-size:25px;border-bottom:3px solid transparent}
+.c-hi{background:var(--ok-soft);color:var(--ok)}
+.c-md{background:var(--warn-soft);color:var(--warn);border-bottom:3px dashed var(--warn)}
+.c-lo{background:var(--bad-soft);color:var(--bad);border-bottom:3px solid var(--bad)}
+.c-ed{background:var(--surface2);color:var(--ink)}
+.lg{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.lg i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.cand{flex:1;min-width:0;min-height:48px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:'JetBrains Mono',monospace;font-feature-settings:"zero" 1;font-weight:700;font-size:15px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;line-height:1.2}
+.cand small{font-family:'Public Sans',sans-serif;font-size:11px;color:var(--muted);font-weight:600}
+.cand.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.meter{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden;flex:1}
+.meter span{display:block;height:100%;border-radius:4px}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.vs{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:44px}
+.vs.on{border-color:var(--accent);background:var(--accent-soft)}
+.toast{position:absolute;left:16px;right:16px;bottom:164px;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);font-weight:600;font-size:14px;z-index:30}
+.act{display:flex;flex-direction:column;gap:8px}
+.act .btn{justify-content:flex-start}
+.spin{animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.box{position:absolute;border:2.5px solid #FFD43B;border-radius:4px;box-shadow:0 0 0 2000px rgba(0,0,0,.18)}
+.box b{position:absolute;left:-2px;top:-22px;background:#FFD43B;color:#1A1A1A;font-size:11px;font-weight:800;padding:2px 6px;border-radius:4px 4px 4px 0;white-space:nowrap}
+</style>
+</helmet>
+<div class="app" data-theme="{{theme}}" style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column">
+<header style="padding: 12px 16px 0; display: flex; flex-direction: column; gap: 10px; background: var(--surface); border-bottom: 1px solid var(--line)">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="font-size: 22px; font-weight: 800">Review</h1>
+<span class="muted" style="font-size: 13px">{{whoNote}}</span>
+</div>
+<div class="seg" role="group" aria-label="Whose uploads">
+<button class="{{mineCls}}" aria-pressed="{{isMine}}" onClick="{{setMine}}">My uploads</button>
+<button class="{{allCls}}" aria-pressed="{{isAll}}" onClick="{{setAll}}">Everyone</button>
+</div>
+<div style="display: flex" role="tablist">
+<button class="rtab {{verCls}}" role="tab" aria-selected="{{isVer}}" onClick="{{tabVer}}">Verify <span class="badge">{{verCount}}</span></button>
+<button class="rtab {{idnCls}}" role="tab" aria-selected="{{isIdn}}" onClick="{{tabIdn}}">Identify <span class="badge">{{idnCount}}</span></button>
+</div>
+</header>
+
+<sc-if value="{{showVer}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; overflow-y: auto; padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="font-weight: 800; font-size: 15px">{{v.n}} of {{v.total}}</span>
+<span class="lockn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>You're reviewing this</span>
+</div>
+<div class="meter" style="height: 4px; flex: none"><span style="width: {{v.pct}}%; background: var(--accent)"></span></div>
+<p class="muted" style="font-size: 13px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap"><span class="ava {{v.uCls}}">{{v.initial}}</span>uploaded by {{v.byLabel}} · {{v.ago}} · {{v.place}}</p>
+</div>
+<div style="position: relative; border-radius: 12px; overflow: hidden; height: 150px; background: {{v.car}}; display: flex; align-items: center; justify-content: center">
+<div style="filter: blur({{v.blurPx}}px); transform: rotate(-1.5deg); background: #F4F4EF; border: 3px solid #13204A; border-radius: 10px; width: 250px; height: 112px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #13204A">
+<span style="font-size: 12px; font-weight: 800; letter-spacing: .2em">{{v.stName}}</span>
+<span class="mono" style="font-size: 46px; font-weight: 800; letter-spacing: .04em; line-height: 1.05">{{v.ptxt}}</span>
+</div>
+<svg width="84" height="63" viewBox="0 0 400 300" role="img" aria-label="Full photo" style="position: absolute; right: 8px; bottom: 8px; border-radius: 6px; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.35)"><rect width="400" height="300" fill="{{v.bg}}"></rect><rect y="210" width="400" height="90" fill="#4A4F55"></rect><rect x="90" y="110" width="220" height="140" rx="26" fill="{{v.car}}"></rect><rect x="115" y="122" width="170" height="48" rx="10" fill="#1C2025" opacity=".7"></rect><rect x="170" y="196" width="60" height="30" rx="3" fill="#F4F4EF"></rect><rect x="164" y="190" width="72" height="42" fill="none" stroke="#FFD43B" stroke-width="6"></rect></svg>
+<span style="position: absolute; left: 8px; top: 8px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px">Plate crop · 4×</span>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px">
+<span class="lbl" style="flex: none">Blur</span>
+<div class="meter" role="meter" aria-label="Blur score" aria-valuenow="{{v.blur}}" aria-valuemin="0" aria-valuemax="1"><span style="width: {{v.blurPct}}%; background: {{v.blurColor}}"></span></div>
+<span class="mono" style="font-size: 13px; font-weight: 700">{{v.blur}}</span>
+<span style="font-size: 13px; font-weight: 700; color: {{v.blurColor}}">{{v.blurWord}}</span>
+</div>
+
+<sc-if value="{{v.disagree}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span class="lbl">Readers disagree</span>
+<div style="display: flex; gap: 8px">
+<button class="vs {{v.ocrCls}}" onClick="{{v.useOcr}}"><span class="lbl" style="font-size: 11px">OCR · {{v.oc}}%</span><span class="mono" style="font-size: 19px; font-weight: 800">{{v.ocr}}</span></button>
+<button class="vs {{v.vlmCls}}" onClick="{{v.useVlm}}"><span class="lbl" style="font-size: 11px">AI (VLM) · {{v.vc}}%</span><span class="mono" style="font-size: 19px; font-weight: 800">{{v.vlm}}</span></button>
+</div>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span class="lbl">Plate text</span>
+<div style="display: flex; gap: 4px; flex-wrap: wrap" aria-hidden="true">
+<sc-for list="{{v.chars}}" as="c" hint-placeholder-count="7"><span class="cbox {{c.cls}}">{{c.ch}}</span></sc-for>
+</div>
+<label class="muted" style="font-size: 13px; display: flex; flex-direction: column; gap: 4px">Edit if wrong · use ? for an unreadable character<input class="field mono" style="font-size: 20px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase" value="{{v.text}}" onChange="{{onText}}" aria-label="Plate text"></label>
+<div style="display: flex; gap: 12px"><span class="lg"><i class="c-hi"></i>sure</span><span class="lg"><i class="c-md" style="border: 0"></i>unsure</span><span class="lg"><i class="c-lo" style="border: 0"></i>doubtful</span><span class="lg"><i class="c-ed"></i>edited</span></div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span class="lbl">Top readings</span>
+<div style="display: flex; gap: 8px">
+<sc-for list="{{v.cands}}" as="k" hint-placeholder-count="3"><button class="cand {{k.cls}}" onClick="{{k.pick}}">{{k.t}}<small>{{k.p}}%</small></button></sc-for>
+</div>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; align-items: center; gap: 8px"><span class="lbl">State</span><sc-if value="{{v.isGuess}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: var(--amber-bg); color: var(--amber-ink); border: 1px dashed var(--amber-line)">guess</span></sc-if></span>
+<select class="field" value="{{v.st}}" onChange="{{onState}}">
+<option value="AZ">AZ · Arizona</option><option value="CA">CA · California</option><option value="CO">CO · Colorado</option><option value="NM">NM · New Mexico</option><option value="NY">NY · New York</option><option value="TX">TX · Texas</option><option value="WA">WA · Washington</option><option value="??">Unknown</option>
+</select>
+</label>
+<p class="muted" style="font-size: 13px">{{v.prior}}</p>
+</div>
+<div style="display: flex; gap: 8px; padding: 10px 16px; border-top: 1px solid var(--line); background: var(--surface)">
+<button class="btn danger" onClick="{{reject}}" aria-label="Reject: not a plate"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>Not a plate</button>
+<button class="btn" onClick="{{skip}}">Skip</button>
+<button class="btn primary" style="flex: 1" onClick="{{confirm}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>Confirm</button>
+</div>
+</sc-if>
+
+<sc-if value="{{showIdn}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; overflow-y: auto; padding: 12px 16px 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="font-weight: 800; font-size: 15px">{{i.n}} of {{i.total}}</span>
+<span class="lockn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>You're reviewing this</span>
+</div>
+<p class="muted" style="font-size: 13px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap"><span class="ava {{i.uCls}}">{{i.initial}}</span>uploaded by {{i.byLabel}} · {{i.ago}} · {{i.place}}</p>
+<p style="font-size: 13px; font-weight: 600">{{i.why}}</p>
+</div>
+<div style="position: relative; height: 270px; border-radius: 12px; overflow: hidden; background: #111; touch-action: none; cursor: {{cursor}}" aria-label="Photo viewer. Pinch or use the zoom buttons; drag to pan." onPointerDown="{{pDown}}" onPointerMove="{{pMove}}" onPointerUp="{{pUp}}" onWheel="{{onWheel}}">
+<div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 0 0; transform: translate({{px}}px, {{py}}px) scale({{zoom}})">
+<svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true" style="display: block; filter: blur({{i.blurPx}}px)"><rect width="400" height="300" fill="{{i.bg}}"></rect><rect x="0" y="40" width="160" height="150" fill="#00000022"></rect><rect y="205" width="400" height="95" fill="#4A4F55"></rect><path d="M0 255h400" stroke="#E8E2C8" stroke-width="3" stroke-dasharray="26 18"></path><g opacity="{{i.one}}"><rect x="90" y="110" width="220" height="140" rx="26" fill="{{i.car}}"></rect><rect x="115" y="122" width="170" height="48" rx="10" fill="#1C2025" opacity=".7"></rect><rect x="98" y="186" width="34" height="14" rx="3" fill="#D8392B"></rect><rect x="268" y="186" width="34" height="14" rx="3" fill="#D8392B"></rect><rect x="170" y="196" width="60" height="30" rx="3" fill="#F4F4EF"></rect><text x="200" y="217" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="12" fill="#13204A">{{i.ptxt}}</text><rect x="96" y="236" width="208" height="12" rx="4" fill="#2A2E33"></rect></g><g opacity="{{i.two}}"><rect x="20" y="130" width="160" height="110" rx="20" fill="{{i.car}}"></rect><rect x="38" y="140" width="124" height="36" rx="8" fill="#1C2025" opacity=".7"></rect><rect x="76" y="198" width="48" height="22" rx="2" fill="#F4F4EF"></rect><text x="100" y="214" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="9" fill="#13204A">LNV9302</text><rect x="222" y="120" width="160" height="116" rx="20" fill="#DCD7C9"></rect><rect x="240" y="130" width="124" height="38" rx="8" fill="#1C2025" opacity=".7"></rect><rect x="278" y="192" width="48" height="22" rx="2" fill="#F4F4EF"></rect><text x="302" y="208" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="9" fill="#13204A">CXNS58</text></g></svg>
+<sc-for list="{{i.boxes}}" as="b" hint-placeholder-count="0"><div class="box" style="left: {{b.x}}%; top: {{b.y}}%; width: {{b.w}}%; height: {{b.h}}%"><b>{{b.label}}</b></div></sc-for>
+<sc-if value="{{hasDrag}}" hint-placeholder-val="{{ false }}"><div class="box" style="left: {{drag.x}}%; top: {{drag.y}}%; width: {{drag.w}}%; height: {{drag.h}}%; border-style: dashed"></div></sc-if>
+</div>
+<sc-if value="{{draw}}" hint-placeholder-val="{{ false }}"><p style="position: absolute; left: 10px; right: 10px; top: 10px; background: rgba(0,0,0,.66); color: #fff; font-size: 13px; font-weight: 600; padding: 8px 10px; border-radius: 8px; text-align: center; pointer-events: none">Drag a rectangle around the plate</p></sc-if>
+<sc-if value="{{reading}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; inset: 0; background: rgba(0,0,0,.55); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #fff; font-weight: 700"><svg class="spin" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"></path></svg>Reading…</div></sc-if>
+<div style="position: absolute; right: 8px; bottom: 8px; display: flex; gap: 6px">
+<button class="iconbtn" aria-label="Zoom out" onClick="{{zoomOut}}" onPointerDown="{{stop}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+<button class="iconbtn" aria-label="Zoom in" onClick="{{zoomIn}}" onPointerDown="{{stop}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+</div>
+<span style="position: absolute; left: 8px; bottom: 8px; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px" class="mono">{{zoomLabel}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<span class="lbl" style="flex: none">Blur</span>
+<div class="meter" role="meter" aria-label="Blur score" aria-valuenow="{{i.blur}}" aria-valuemin="0" aria-valuemax="1"><span style="width: {{i.blurPct}}%; background: {{i.blurColor}}"></span></div>
+<span class="mono" style="font-size: 13px; font-weight: 700">{{i.blur}}</span>
+<span style="font-size: 13px; font-weight: 700; color: {{i.blurColor}}">{{i.blurWord}}</span>
+</div>
+<sc-if value="{{i.hasBoxes}}" hint-placeholder-val="{{ false }}">
+<div class="card" style="padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px">
+<span style="font-size: 14px; font-weight: 600">{{i.boxNote}}</span>
+<button class="btn primary" onClick="{{readBox}}">Read box</button>
+</div>
+</sc-if>
+<sc-if value="{{typing}}" hint-placeholder-val="{{ false }}">
+<div class="card" style="padding: 12px; display: flex; flex-direction: column; gap: 8px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px">Type the plate<input class="field mono" style="font-size: 20px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase" placeholder="7A?123" value="{{typed}}" onChange="{{onTyped}}"></label>
+<p class="muted" style="font-size: 13px">Use <span class="mono" style="font-weight: 800; color: var(--ink)">?</span> for each character you can't read. It's saved as a partial plate.</p>
+<div style="display: flex; gap: 8px"><button class="btn" onClick="{{cancelType}}">Cancel</button><button class="btn primary" style="flex: 1" onClick="{{saveTyped}}">{{saveLabel}}</button></div>
+</div>
+</sc-if>
+<div class="act">
+<button class="btn primary block" style="justify-content: center" onClick="{{startDraw}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"></path></svg>Draw box around plate</button>
+<div style="display: flex; gap: 8px">
+<button class="btn" style="flex: 1" onClick="{{startType}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 7V5h14v2M12 5v14M9 19h6"></path></svg>Type plate</button>
+<button class="btn" style="flex: 1" onClick="{{addAnother}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add another plate</button>
+</div>
+<div style="display: flex; gap: 8px">
+<button class="btn danger" style="flex: 1" onClick="{{noPlate}}">No plate in photo</button>
+<button class="btn" style="flex: 1.3" onClick="{{keepSighting}}">Can't read — keep sighting</button>
+</div>
+<button class="btn" style="justify-content: center; border-style: dashed" onClick="{{iskip}}">Skip for now</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center">
+<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 3 3 5-6"></path></svg>
+<p style="font-weight: 800; font-size: 17px">All caught up</p>
+<p class="muted">Nothing left in this tab.</p>
+</div>
+</sc-if>
+
+<nav class="tabbar" aria-label="Main">
+<a href="Upload.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>Upload</a>
+<a href="Review.dc.html" class="on" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M8 12l3 3 5-6"></path></svg>Review<span class="badge">{{navBadge}}</span></a>
+<a href="Plates.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect><path d="M6.5 12h3M12 12h5.5"></path></svg>Plates</a>
+<a href="Map.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"></path><path d="M9 4v14M15 6v14"></path></svg>Map</a>
+<a href="More.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="19" cy="12" r="1.7"></circle></svg>More</a>
+</nav>
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div class="toast" role="status"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>{{toast}}</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["auto","light","dark"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+const ME = 'alex';
+const SN = { AZ: 'ARIZONA', CA: 'CALIFORNIA', CO: 'COLORADO', NM: 'NEW MEXICO', NY: 'NEW YORK', TX: 'TEXAS', WA: 'WASHINGTON', '??': '' };
+const VER = [
+  { id: 'v1', by: 'alex', ago: '2h ago', place: 'near Denver, CO', ocr: '8XR7O44', oc: 58, vlm: 'BXR7044', vc: 91, text: 'BXR7044', ptxt: 'BXR7044', conf: [0.55, 0.96, 0.94, 0.97, 0.42, 0.93, 0.95], cands: [['BXR7044', 91], ['8XR7044', 63], ['BXR7O44', 41]], st: 'WA', guess: false, blur: 0.71, car: '#C9C4B6', bg: '#9AA6B3', prior: 'BXR7044 was seen once before: Jul 11 near Denver, CO (jordan).' },
+  { id: 'm1', by: 'maya', ago: '2h ago', place: 'near Phoenix, AZ', ocr: 'TX2CAL1', oc: 72, vlm: 'TX2CALI', vc: 88, text: 'TX2CALI', ptxt: 'TX2CALI', conf: [0.97, 0.95, 0.92, 0.9, 0.93, 0.88, 0.61], cands: [['TX2CALI', 88], ['TX2CAL1', 72], ['TXZCALI', 30]], st: 'CA', guess: false, blur: 0.24, car: '#3C5A78', bg: '#B7A98F', prior: 'Matches TX2CALI · 4 earlier sightings in 3 places.' },
+  { id: 'v2', by: 'alex', ago: '5h ago', place: 'near Austin, TX', ocr: 'DHK4821', oc: 94, vlm: 'DHK4821', vc: 95, text: 'DHK4821', ptxt: 'DHK·4821', conf: [0.97, 0.96, 0.95, 0.98, 0.74, 0.96, 0.97], cands: [['DHK4821', 95], ['DHK4B21', 22], ['OHK4821', 9]], st: 'TX', guess: false, blur: 0.18, car: '#7A1F1F', bg: '#8FA0AE', prior: 'Matches DHK-4821 · 7 earlier sightings.' },
+  { id: 'j1', by: 'jordan', ago: '6h ago', place: 'near Dallas, TX', ocr: 'KGT5527', oc: 83, vlm: 'KGT5527', vc: 86, text: 'KGT5527', ptxt: 'KGT·5527', conf: [0.9, 0.86, 0.95, 0.66, 0.7, 0.94, 0.95], cands: [['KGT5527', 86], ['KGTS527', 31], ['KGT5S27', 18]], st: 'NY', guess: false, blur: 0.33, car: '#1E2B3A', bg: '#A3AFB9', prior: 'Matches KGT-5527 · 3 earlier sightings.' },
+  { id: 'v3', by: 'alex', ago: '1d ago', place: 'near Santa Fe, NM', ocr: 'LUVU2', oc: 81, vlm: 'LUVU2', vc: 84, text: 'LUVU2', ptxt: 'LUVU2', conf: [0.93, 0.9, 0.68, 0.88, 0.95], cands: [['LUVU2', 84], ['LUVV2', 40], ['LUVUZ', 22]], st: 'CA', guess: true, blur: 0.22, car: '#E6E2D6', bg: '#A9B7A0', prior: 'Matches LUVU2 · 5 earlier sightings.' },
+  { id: 'v4', by: 'alex', ago: '1d ago', place: 'near Phoenix, AZ', ocr: 'CBS8105', oc: 79, vlm: 'CBS8105', vc: 82, text: 'CBS8105', ptxt: 'CBS8105', conf: [0.94, 0.7, 0.62, 0.66, 0.95, 0.9, 0.93], cands: [['CBS8105', 82], ['C8S8105', 26], ['CB58105', 21]], st: 'AZ', guess: false, blur: 0.3, car: '#C9A227', bg: '#9FB4C4', prior: 'Matches CBS8105 · 4 earlier sightings.' }
+];
+const IDN = [
+  { id: 'i1', by: 'alex', ago: '1h ago', place: 'near Denver, CO', why: 'OCR found a plate-shaped area but could not read it.', blur: 0.38, car: '#B9BEC4', bg: '#7C8C76', ptxt: 'NOTMYCAR', one: 1, two: 0, boxes: [{ x: 41.5, y: 64, w: 17.5, h: 11 }], result: { ocr: 'N0TMYCAR', oc: 61, vlm: 'NOTMYCAR', vc: 90, text: 'NOTMYCAR', ptxt: 'NOTMYCAR', conf: [0.93, 0.52, 0.91, 0.9, 0.94, 0.88, 0.92, 0.9], cands: [['NOTMYCAR', 90], ['N0TMYCAR', 61], ['NOTMYCAB', 12]], st: 'CO', guess: true, prior: 'Matches NOTMYCAR · 4 earlier sightings.' } },
+  { id: 'i2', by: 'alex', ago: '3h ago', place: 'near Dallas, TX', why: 'Too blurry — no plate found.', blur: 0.93, car: '#2D5E8C', bg: '#8E9AA6', ptxt: 'KGT5527', one: 1, two: 0, boxes: [], result: { ocr: 'KG75S27', oc: 34, vlm: 'KGT5527', vc: 58, text: 'KGT5527', ptxt: 'KGT·5527', conf: [0.6, 0.55, 0.3, 0.45, 0.35, 0.5, 0.62], cands: [['KGT5527', 58], ['KG75S27', 34], ['KGT5S27', 20]], st: 'NY', guess: true, prior: 'Possible match: KGT-5527 · 3 earlier sightings.' } },
+  { id: 'i3', by: 'alex', ago: 'yesterday', place: 'near Austin, TX', why: 'Two cars in frame — OCR found no single plate.', blur: 0.2, car: '#5C6B3A', bg: '#9DAA97', ptxt: '', one: 0, two: 1, boxes: [], result: { ocr: 'LNV9302', oc: 88, vlm: 'LNV9302', vc: 90, text: 'LNV9302', ptxt: 'LNV·9302', conf: [0.95, 0.9, 0.93, 0.95, 0.91, 0.86, 0.94], cands: [['LNV9302', 90], ['LNV93O2', 20], ['INV9302', 12]], st: 'TX', guess: false, prior: 'Matches LNV-9302 · 3 earlier sightings.' } },
+  { id: 'i4', by: 'maya', ago: '4h ago', place: 'near Santa Fe, NM', why: 'OCR found no plate.', blur: 0.47, car: '#6E2C5A', bg: '#B7A98F', ptxt: 'LFR308', one: 1, two: 0, boxes: [], result: { ocr: 'LFR308', oc: 77, vlm: 'LFR308', vc: 85, text: 'LFR308', ptxt: 'LFR·308', conf: [0.9, 0.88, 0.9, 0.85, 0.6, 0.9], cands: [['LFR308', 85], ['LFR3O8', 30], ['LFR3B8', 12]], st: 'NM', guess: false, prior: 'Matches LFR-308 · 4 earlier sightings.' } },
+  { id: 'i5', by: 'jordan', ago: '9h ago', place: 'near Phoenix, AZ', why: 'Plate partly hidden by a bike rack.', blur: 0.29, car: '#E1DED3', bg: '#9FB4C4', ptxt: '7A?123', one: 1, two: 0, boxes: [], result: { ocr: '7A8123', oc: 40, vlm: '7A?123', vc: 70, text: '7A?123', ptxt: '7A?123', conf: [0.93, 0.9, 0.2, 0.9, 0.92, 0.94], cands: [['7A?123', 70], ['7AB123', 40], ['7A8123', 33]], st: 'CA', guess: true, prior: 'Partial plate · matches 7A?123.' } }
+];
+const HIDDEN = { mine: { v: 6, i: 2 }, all: { v: 11, i: 3 } };
+function blurInfo(b) {
+  const word = b >= 0.7 ? 'Blurry' : b >= 0.4 ? 'Soft' : 'Sharp';
+  const color = b >= 0.7 ? 'var(--bad)' : b >= 0.4 ? 'var(--warn)' : 'var(--ok)';
+  return { blurWord: word, blurColor: color, blurPct: Math.round(b * 100) };
+}
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.W = 358; this.H = 270;
+    this.state = { who: 'mine', tab: 'verify', ver: VER.slice(), idn: IDN.map((x) => ({ ...x, boxes: x.boxes.slice() })), vdone: 2, idone: 0, vpos: 0, ipos: 0, text: null, st: null, draw: false, drag: null, pan: null, reading: false, zoom: 1, px: 0, py: 0, typing: false, typed: '', toast: null };
+  }
+  componentWillUnmount() { clearTimeout(this.tt); clearTimeout(this.rt); }
+  flash(msg) { clearTimeout(this.tt); this.setState({ toast: msg }); this.tt = setTimeout(() => this.setState({ toast: null }), 2600); }
+  lists() {
+    const s = this.state;
+    const f = (x) => s.who === 'all' || x.by === ME;
+    return { ver: s.ver.filter(f), idn: s.idn.filter(f), hid: HIDDEN[s.who] };
+  }
+  resetItem(extra) { this.setState({ text: null, st: null, draw: false, drag: null, reading: false, zoom: 1, px: 0, py: 0, typing: false, typed: '', ...extra }); }
+  curV() { const L = this.lists().ver; return L.length ? L[this.state.vpos % L.length] : null; }
+  curI() { const L = this.lists().idn; return L.length ? L[this.state.ipos % L.length] : null; }
+  removeV(id, msg) { this.setState({ ver: this.state.ver.filter((x) => x.id !== id), vdone: this.state.vdone + 1 }); this.resetItem(); this.flash(msg); }
+  removeI(id, msg) { this.setState({ idn: this.state.idn.filter((x) => x.id !== id), idone: this.state.idone + 1 }); this.resetItem(); this.flash(msg); }
+  startReading() {
+    const it = this.curI(); if (!it) return;
+    this.setState({ reading: true, draw: false, drag: null });
+    this.rt = setTimeout(() => {
+      const r = it.result;
+      const nv = { ...r, id: 'r' + it.id, by: it.by, ago: it.ago, place: it.place, blur: it.blur, car: it.car, bg: it.bg };
+      this.setState({ ver: [nv].concat(this.state.ver), idn: this.state.idn.filter((x) => x.id !== it.id), idone: this.state.idone + 1, tab: 'verify', vpos: 0 });
+      this.resetItem();
+      this.flash('Read ' + r.text + ' — moved to Verify');
+    }, 1500);
+  }
+  setZoom(z) {
+    z = Math.max(1, Math.min(3, z));
+    this.setState({ zoom: z, px: -(this.W * (z - 1)) / 2, py: -(this.H * (z - 1)) / 2 });
+  }
+  renderVals() {
+    const s = this.state;
+    const { ver, idn, hid } = this.lists();
+    const vRemain = ver.length + hid.v, iRemain = idn.length + hid.i;
+    const mineV = s.ver.filter((x) => x.by === ME).length + HIDDEN.mine.v, mineI = s.idn.filter((x) => x.by === ME).length + HIDDEN.mine.i;
+    const cv = this.curV(), ci = this.curI();
+    let v = {};
+    if (cv) {
+      const text = (s.text ?? cv.text).toUpperCase();
+      const st = s.st ?? cv.st;
+      const chars = text.split('').map((ch, k) => ({ ch, cls: cv.text[k] === ch ? (cv.conf[k] >= 0.85 ? 'c-hi' : cv.conf[k] >= 0.6 ? 'c-md' : 'c-lo') : 'c-ed' }));
+      const total = s.vdone + vRemain;
+      v = {
+        ...cv, ...blurInfo(cv.blur), text, st, chars,
+        n: Math.min(total, s.vdone + 1 + (s.vpos % Math.max(1, ver.length))), total, pct: Math.round((s.vdone / total) * 100),
+        uCls: 'u-' + cv.by, initial: cv.by[0].toUpperCase(), byLabel: cv.by === ME ? 'you' : cv.by,
+        blurPx: (cv.blur * 2.4).toFixed(1), stName: SN[st] || '',
+        disagree: cv.ocr !== cv.vlm,
+        ocrCls: text === cv.ocr ? 'on' : '', vlmCls: text === cv.vlm ? 'on' : '',
+        useOcr: () => this.setState({ text: cv.ocr }), useVlm: () => this.setState({ text: cv.vlm }),
+        cands: cv.cands.map(([t, p]) => ({ t, p, cls: t === text ? 'on' : '', pick: () => this.setState({ text: t }) })),
+        isGuess: cv.guess && s.st == null
+      };
+    }
+    let i = {};
+    if (ci) {
+      const total = s.idone + iRemain;
+      i = {
+        ...ci, ...blurInfo(ci.blur),
+        n: Math.min(total, s.idone + 1 + (s.ipos % Math.max(1, idn.length))), total,
+        uCls: 'u-' + ci.by, initial: ci.by[0].toUpperCase(), byLabel: ci.by === ME ? 'you' : ci.by,
+        blurPx: ci.blur >= 0.9 ? 5 : ci.blur >= 0.7 ? 2.5 : 0,
+        boxes: ci.boxes.map((b, k) => ({ ...b, label: 'Plate ' + (k + 1) })),
+        hasBoxes: ci.boxes.length > 0 && !s.reading,
+        boxNote: ci.boxes.length === 1 ? '1 plate box drawn' : ci.boxes.length + ' plate boxes drawn'
+      };
+    }
+    let drag = {};
+    if (s.drag) { const d = s.drag; drag = { x: Math.min(d.x0, d.x1), y: Math.min(d.y0, d.y1), w: Math.abs(d.x1 - d.x0), h: Math.abs(d.y1 - d.y0) }; }
+    const toPhoto = (e) => { const r = e.currentTarget.getBoundingClientRect(); this.W = r.width; this.H = r.height; return { x: ((e.clientX - r.left - s.px) / s.zoom / r.width) * 100, y: ((e.clientY - r.top - s.py) / s.zoom / r.height) * 100 }; };
+    const showVer = s.tab === 'verify' && !!cv, showIdn = s.tab === 'identify' && !!ci;
+    const typedClean = s.typed.toUpperCase();
+    return {
+      theme: this.props.theme ?? 'auto',
+      isMine: s.who === 'mine', isAll: s.who === 'all', mineCls: s.who === 'mine' ? 'on' : '', allCls: s.who === 'all' ? 'on' : '',
+      whoNote: s.who === 'mine' ? 'Showing your uploads' : 'Showing everyone',
+      setMine: () => { this.setState({ who: 'mine', vpos: 0, ipos: 0 }); this.resetItem(); },
+      setAll: () => { this.setState({ who: 'all', vpos: 0, ipos: 0 }); this.resetItem(); },
+      isVer: s.tab === 'verify', isIdn: s.tab === 'identify', verCls: s.tab === 'verify' ? 'on' : '', idnCls: s.tab === 'identify' ? 'on' : '',
+      tabVer: () => { this.setState({ tab: 'verify' }); this.resetItem(); }, tabIdn: () => { this.setState({ tab: 'identify' }); this.resetItem(); },
+      verCount: vRemain, idnCount: iRemain, navBadge: mineV + mineI,
+      showVer, showIdn, empty: !showVer && !showIdn,
+      v, i, drag, hasDrag: !!s.drag, draw: s.draw, reading: s.reading,
+      px: s.px, py: s.py, zoom: s.zoom, zoomLabel: s.zoom.toFixed(1) + '×', cursor: s.draw ? 'crosshair' : s.zoom > 1 ? 'grab' : 'default',
+      typing: s.typing, typed: s.typed, saveLabel: typedClean.includes('?') ? 'Save as partial plate' : 'Save plate',
+      hasToast: !!s.toast, toast: s.toast,
+      onText: (e) => this.setState({ text: e.target.value.toUpperCase() }),
+      onState: (e) => this.setState({ st: e.target.value }),
+      confirm: () => cv && this.removeV(cv.id, 'Confirmed ' + v.text + ' · ' + v.st),
+      reject: () => cv && this.removeV(cv.id, 'Rejected — not a plate'),
+      skip: () => { this.setState({ vpos: s.vpos + 1 }); this.resetItem(); },
+      iskip: () => { this.setState({ ipos: s.ipos + 1 }); this.resetItem(); },
+      startDraw: () => this.setState({ draw: true, typing: false }),
+      addAnother: () => { this.setState({ draw: true, typing: false }); this.flash('Drag a box around the next plate'); },
+      readBox: () => this.startReading(),
+      startType: () => this.setState({ typing: true, draw: false }),
+      cancelType: () => this.setState({ typing: false, typed: '' }),
+      onTyped: (e) => this.setState({ typed: e.target.value.toUpperCase() }),
+      saveTyped: () => { if (!ci || !typedClean) return; this.removeI(ci.id, (typedClean.includes('?') ? 'Saved partial plate ' : 'Saved ') + typedClean); },
+      noPlate: () => ci && this.removeI(ci.id, 'Marked: no plate in photo'),
+      keepSighting: () => ci && this.removeI(ci.id, 'Kept as unidentified sighting · ' + ci.place),
+      zoomIn: () => this.setZoom(s.zoom + 0.5), zoomOut: () => this.setZoom(s.zoom - 0.5),
+      stop: (e) => e.stopPropagation(),
+      onWheel: (e) => this.setZoom(s.zoom + (e.deltaY < 0 ? 0.25 : -0.25)),
+      pDown: (e) => {
+        if (s.reading) return;
+        if (e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId);
+        if (s.draw) { const p = toPhoto(e); this.setState({ drag: { x0: p.x, y0: p.y, x1: p.x, y1: p.y } }); }
+        else if (s.zoom > 1) this.setState({ pan: { sx: e.clientX, sy: e.clientY, px: s.px, py: s.py } });
+      },
+      pMove: (e) => {
+        if (s.drag) { const p = toPhoto(e); this.setState({ drag: { ...s.drag, x1: p.x, y1: p.y } }); }
+        else if (s.pan) {
+          const r = e.currentTarget.getBoundingClientRect();
+          const px = Math.max(r.width * (1 - s.zoom), Math.min(0, s.pan.px + e.clientX - s.pan.sx));
+          const py = Math.max(r.height * (1 - s.zoom), Math.min(0, s.pan.py + e.clientY - s.pan.sy));
+          this.setState({ px, py });
+        }
+      },
+      pUp: () => {
+        if (s.drag && ci) {
+          const b = drag;
+          if (b.w > 3 && b.h > 3) {
+            this.setState({ idn: s.idn.map((x) => (x.id === ci.id ? { ...x, boxes: x.boxes.concat([b]) } : x)), drag: null, draw: false });
+            setTimeout(() => this.startReading(), 0);
+          } else this.setState({ drag: null });
+        } else if (s.pan) this.setState({ pan: null });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

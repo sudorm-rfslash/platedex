@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Platedex · Settings and Admin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+.app{--bg:#F4F5F3;--surface:#FFFFFF;--surface2:#ECEEEB;--ink:#15181C;--muted:#555C64;--line:#D7DBDD;--accent:#1D4ED8;--accent-ink:#FFFFFF;--accent-soft:#E2E9FC;--amber-bg:#FEF3C7;--amber-line:#E9B949;--amber-ink:#6E4300;--ok:#147A39;--ok-soft:#DCF2E3;--bad:#B42318;--bad-soft:#FCE5E2;--badge:#C8291C;--badge-ink:#FFFFFF;--shadow:0 1px 2px rgba(16,24,40,.06),0 6px 20px rgba(16,24,40,.10);font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.app[data-theme="dark"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--ok:#5BD68B;--ok-soft:#13301F;--bad:#FF8A7E;--bad-soft:#3A1714;--badge:#FF7A6B;--badge-ink:#240804;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45)}
+@media (prefers-color-scheme: dark){.app[data-theme="auto"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--ok:#5BD68B;--ok-soft:#13301F;--bad:#FF8A7E;--bad-soft:#3A1714;--badge:#FF7A6B;--badge-ink:#240804;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45)}}
+.app *{box-sizing:border-box}
+.app a{color:var(--accent)}
+.app h1,.app h2,.app h3,.app p{margin:0}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-feature-settings:"zero" 1;font-variant-numeric:slashed-zero}
+.btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.app a.btn{color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--bad)}
+.btn.dangerfill{background:var(--bad);border-color:var(--bad);color:#fff}
+.field{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 12px;font:inherit;width:100%}
+.btn:focus-visible,.field:focus,.app a:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--badge);color:var(--badge-ink);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.ava{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex:none}
+.u-alex{background:#1D4ED8}.u-maya{background:#B4441A}.u-jordan{background:#0F6B63}
+.tabbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line);background:var(--surface);padding-bottom:20px;flex:none}
+.tabbar a{min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none;position:relative}
+.app .tabbar a.on{color:var(--accent)}
+.tabbar .badge{position:absolute;top:4px;left:calc(50% + 5px)}
+.seg{display:flex;background:var(--surface2);border-radius:10px;padding:3px;gap:2px}
+.seg button{flex:1;min-height:40px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.lbl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sec{display:flex;flex-direction:column;gap:10px}
+.item{display:flex;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.pill{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.p-ok{background:var(--ok-soft);color:var(--ok)}.p-mute{background:var(--surface2);color:var(--muted)}
+.bar{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);border-radius:4px}
+.once{background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;color:var(--amber-ink)}
+.toast{position:absolute;left:16px;right:16px;bottom:100px;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);font-weight:600;font-size:14px;z-index:30}
+</style>
+</helmet>
+<div class="app" data-theme="{{theme}}" style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column">
+<header style="padding: 12px 16px 10px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); border-bottom: 1px solid var(--line)">
+<h1 style="font-size: 22px; font-weight: 800">More</h1>
+<div class="seg" role="tablist"><button role="tab" class="{{setCls}}" aria-selected="{{isSet}}" onClick="{{goSet}}">Settings</button><button role="tab" class="{{admCls}}" aria-selected="{{isAdm}}" onClick="{{goAdm}}">Admin</button></div>
+</header>
+<div style="flex: 1; overflow-y: auto; padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 22px">
+<sc-if value="{{isSet}}" hint-placeholder-val="{{ true }}">
+<div class="card" style="padding: 14px; display: flex; align-items: center; gap: 12px"><span class="ava u-alex">A</span><div style="flex: 1"><p style="font-weight: 800">alex</p><p class="muted" style="font-size: 13px">Admin · 24 sightings logged</p></div><a href="Main.dc.html" class="btn">Sign out</a></div>
+<section class="sec"><span class="lbl">Appearance</span><div class="seg"><sc-for list="{{themes}}" as="t" hint-placeholder-count="3"><button class="{{t.cls}}" onClick="{{t.pick}}" aria-pressed="{{t.on}}">{{t.label}}</button></sc-for></div></section>
+<section class="sec">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span class="lbl">API tokens</span><span class="muted" style="font-size: 12.5px">for the iOS Shortcut</span></div>
+<p class="muted" style="font-size: 13.5px; margin-top: -4px">The Shortcut uploads original photos, so location and time are kept. Paste a token into it once.</p>
+<sc-if value="{{hasNew}}" hint-placeholder-val="{{ false }}">
+<div class="once" role="status">
+<p style="font-weight: 800">Copy this token now. You won't see it again.</p>
+<div style="display: flex; gap: 8px; align-items: center"><code class="mono" style="flex: 1; min-width: 0; overflow-wrap: anywhere; background: var(--surface); color: var(--ink); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-weight: 700">{{newToken}}</code><button class="btn primary" onClick="{{copy}}">{{copyLabel}}</button></div>
+<button class="btn" onClick="{{doneNew}}" style="align-self: flex-start">Done</button>
+</div>
+</sc-if>
+<div class="card">
+<sc-for list="{{tokens}}" as="k" hint-placeholder-count="2">
+<div class="item" style="flex-wrap: wrap">
+<div style="flex: 1; min-width: 0"><p style="font-weight: 700">{{k.name}}</p><p class="muted" style="font-size: 12.5px"><span class="mono">{{k.prefix}}</span> · created {{k.created}}</p><p style="font-size: 12.5px">Last used {{k.used}}</p></div>
+<sc-if value="{{k.notConfirm}}" hint-placeholder-val="{{ true }}"><button class="btn danger" onClick="{{k.ask}}">Revoke</button></sc-if>
+<sc-if value="{{k.confirm}}" hint-placeholder-val="{{ false }}"><div style="width: 100%; display: flex; gap: 8px; align-items: center; justify-content: flex-end"><span style="font-size: 13px; flex: 1">Shortcuts using it will stop working.</span><button class="btn" onClick="{{k.cancel}}">Cancel</button><button class="btn dangerfill" onClick="{{k.revoke}}">Revoke</button></div></sc-if>
+</div>
+</sc-for>
+<sc-if value="{{noTokens}}" hint-placeholder-val="{{ false }}"><p class="muted" style="padding: 14px; font-size: 14px">No tokens yet.</p></sc-if>
+</div>
+<div style="display: flex; gap: 8px"><label style="flex: 1"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Token name</span><input class="field" placeholder="Token name, e.g. Maya's iPhone" value="{{tname}}" onChange="{{onName}}"></label><button class="btn primary" onClick="{{create}}">Create</button></div>
+</section>
+<section class="sec"><span class="lbl">Linked accounts</span>
+<div class="card">
+<div class="item"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2.2"></circle><path d="M5.8 16.5a3.4 3.4 0 0 1 6.4 0M14.5 10h4M14.5 13.5h3"></path></svg><div style="flex: 1"><p style="font-weight: 700">Pocket ID</p><p class="muted" style="font-size: 12.5px">{{pidNote}}</p></div><span class="pill {{pidPill}}">{{pidState}}</span></div>
+<div class="item" style="justify-content: flex-end; padding-top: 0; border-top: 0"><button class="btn {{pidBtnCls}}" onClick="{{togglePid}}">{{pidBtn}}</button></div>
+<div class="item"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg><div style="flex: 1"><p style="font-weight: 700">Password</p><p class="muted" style="font-size: 12.5px">Changed Mar 3, 2026</p></div><button class="btn">Change</button></div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isAdm}}" hint-placeholder-val="{{ false }}">
+<section class="sec">
+<div style="display: flex; justify-content: space-between; align-items: center"><span class="lbl">Users</span><button class="btn" style="min-height: 40px">+ Invite</button></div>
+<div class="card">
+<sc-for list="{{users}}" as="u" hint-placeholder-count="3">
+<div class="item"><span class="ava {{u.cls}}">{{u.i}}</span><div style="flex: 1; min-width: 0"><p style="font-weight: 700">{{u.name}} <span class="muted" style="font-weight: 500">{{u.you}}</span></p><p class="muted" style="font-size: 12.5px">{{u.n}} sightings · active {{u.active}}</p></div>
+<label><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Role for {{u.name}}</span><select class="field" style="width: 112px" value="{{u.role}}" onChange="{{u.setRole}}"><option value="admin">Admin</option><option value="member">Member</option><option value="viewer">Viewer</option></select></label></div>
+</sc-for>
+</div>
+</section>
+<section class="sec"><span class="lbl">Reprocess all photos</span>
+<div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<p style="font-size: 14px">Runs OCR and the AI reader again on all 74 photos with the current settings. Confirmed plates are kept; changed readings go to Review.</p>
+<sc-if value="{{running}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700"><span>{{doneN}} of 74 photos</span><span class="muted">{{etaLabel}}</span></div>
+<div class="bar" role="progressbar" aria-valuenow="{{pct}}" aria-valuemin="0" aria-valuemax="100" aria-label="Reprocess progress"><span style="width: {{pct}}%"></span></div>
+<p class="muted" style="font-size: 12.5px">{{changedLabel}}</p>
+</sc-if>
+<button class="btn {{rpCls}}" onClick="{{toggleRp}}">{{rpLabel}}</button>
+</div>
+</section>
+<section class="sec"><span class="lbl">OCR confidence threshold</span>
+<div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><label for="thr" style="font-weight: 700">Send to Verify below</label><span class="mono" style="font-size: 20px; font-weight: 800">{{thrPct}}%</span></div>
+<input id="thr" type="range" min="50" max="99" value="{{thrPct}}" onChange="{{onThr}}" style="width: 100%; accent-color: var(--accent); min-height: 36px">
+<div class="muted" style="display: flex; justify-content: space-between; font-size: 12px"><span>50% · fewer reviews</span><span>99% · review almost all</span></div>
+<p style="font-size: 13.5px">About <b>{{reviewShare}}%</b> of uploads would need a human check at this level.</p>
+</div>
+</section>
+<section class="sec"><span class="lbl">AI reader (VLM)</span>
+<div class="seg" role="radiogroup" aria-label="VLM mode"><sc-for list="{{modes}}" as="m" hint-placeholder-count="3"><button role="radio" aria-checked="{{m.on}}" class="{{m.cls}}" onClick="{{m.pick}}">{{m.label}}</button></sc-for></div>
+<p class="muted" style="font-size: 13.5px">{{modeNote}}</p>
+</section>
+</sc-if>
+</div>
+<nav class="tabbar" aria-label="Main">
+<a href="Upload.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5"></path><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"></path></svg>Upload</a>
+<a href="Review.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M8 12l3 3 5-6"></path></svg>Review<span class="badge" aria-label="15 pending">15</span></a>
+<a href="Plates.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect><path d="M6.5 12h3M12 12h5.5"></path></svg>Plates</a>
+<a href="Map.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"></path><path d="M9 4v14M15 6v14"></path></svg>Map</a>
+<a href="More.dc.html" class="on" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="19" cy="12" r="1.7"></circle></svg>More</a>
+</nav>
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}"><div class="toast" role="status">{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["auto","light","dark"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+const MODES = { auto: 'Auto: ask the AI reader only when OCR is unsure or a character looks ambiguous. Recommended.', always: 'Always: read every photo with both. Slower and uses more GPU, catches more look-alikes.', off: 'Off: OCR only. Disagreements are never shown in Review.' };
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = {
+      tab: 'settings', theme: null, tname: '', newToken: null, copied: false,
+      tokens: [{ id: 1, name: "alex's iPhone Shortcut", prefix: 'pdx_7Fq2…', created: 'Aug 2', used: '2 hours ago', confirm: false }, { id: 2, name: 'iPad', prefix: 'pdx_Lm9X…', created: 'May 18', used: 'Sep 30', confirm: false }],
+      pid: true, users: { alex: 'admin', maya: 'member', jordan: 'member' },
+      rp: 'idle', done: 0, thr: 85, mode: 'auto', toast: null
+    };
+  }
+  componentWillUnmount() { clearInterval(this.iv); clearTimeout(this.tt); }
+  flash(m) { clearTimeout(this.tt); this.setState({ toast: m }); this.tt = setTimeout(() => this.setState({ toast: null }), 2400); }
+  patchTok(id, p) { this.setState({ tokens: this.state.tokens.map((t) => (t.id === id ? { ...t, ...p } : t)) }); }
+  renderVals() {
+    const s = this.state;
+    const theme = s.theme ?? this.props.theme ?? 'auto';
+    const pct = Math.round((s.done / 74) * 100);
+    return {
+      theme,
+      isSet: s.tab === 'settings', isAdm: s.tab === 'admin', setCls: s.tab === 'settings' ? 'on' : '', admCls: s.tab === 'admin' ? 'on' : '',
+      goSet: () => this.setState({ tab: 'settings' }), goAdm: () => this.setState({ tab: 'admin' }),
+      themes: [['auto', 'Auto'], ['light', 'Light'], ['dark', 'Dark']].map(([k, label]) => ({ label, on: theme === k, cls: theme === k ? 'on' : '', pick: () => this.setState({ theme: k }) })),
+      tokens: s.tokens.map((t) => ({ ...t, notConfirm: !t.confirm, ask: () => this.patchTok(t.id, { confirm: true }), cancel: () => this.patchTok(t.id, { confirm: false }), revoke: () => { this.setState({ tokens: s.tokens.filter((x) => x.id !== t.id) }); this.flash('Token revoked'); } })),
+      noTokens: s.tokens.length === 0,
+      tname: s.tname, onName: (e) => this.setState({ tname: e.target.value }),
+      hasNew: !!s.newToken, newToken: s.newToken, copyLabel: s.copied ? 'Copied' : 'Copy',
+      create: () => {
+        const tok = 'pdx_' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 14);
+        const name = s.tname.trim() || 'New token';
+        this.setState({ newToken: tok, copied: false, tname: '', tokens: [{ id: Date.now(), name, prefix: tok.slice(0, 8) + '…', created: 'today', used: 'never', confirm: false }].concat(s.tokens) });
+      },
+      copy: () => { try { navigator.clipboard.writeText(s.newToken); } catch (e) {} this.setState({ copied: true }); },
+      doneNew: () => this.setState({ newToken: null }),
+      pidNote: s.pid ? 'Linked as alex · since Jan 4, 2026' : 'Not linked. Link to sign in with a passkey.',
+      pidState: s.pid ? 'Linked' : 'Not linked', pidPill: s.pid ? 'p-ok' : 'p-mute',
+      pidBtn: s.pid ? 'Unlink Pocket ID' : 'Link Pocket ID', pidBtnCls: s.pid ? 'danger' : 'primary',
+      togglePid: () => { this.setState({ pid: !s.pid }); this.flash(s.pid ? 'Pocket ID unlinked' : 'Pocket ID linked'); },
+      users: [['alex', 'u-alex', 24, 'now'], ['maya', 'u-maya', 19, '2h ago'], ['jordan', 'u-jordan', 16, 'yesterday']].map(([name, cls, n, active]) => ({ name, cls, n, active, i: name[0].toUpperCase(), you: name === 'alex' ? '(you)' : '', role: s.users[name], setRole: (e) => { this.setState({ users: { ...s.users, [name]: e.target.value } }); this.flash(name + ' is now ' + e.target.value); } })),
+      running: s.rp !== 'idle', doneN: s.done, pct,
+      etaLabel: s.rp === 'paused' ? 'Paused' : s.rp === 'done' ? 'Finished' : '~' + Math.max(1, Math.round((74 - s.done) * 0.8)) + 's left',
+      changedLabel: Math.floor(s.done / 12) + ' readings changed so far · they will appear in Review',
+      rpLabel: s.rp === 'idle' || s.rp === 'done' ? 'Reprocess all photos' : s.rp === 'running' ? 'Pause' : 'Resume',
+      rpCls: s.rp === 'running' ? '' : 'primary',
+      toggleRp: () => {
+        if (s.rp === 'running') { clearInterval(this.iv); this.setState({ rp: 'paused' }); return; }
+        if (s.rp === 'idle' || s.rp === 'done') this.setState({ done: 0 });
+        this.setState({ rp: 'running' });
+        clearInterval(this.iv);
+        this.iv = setInterval(() => {
+          const d = Math.min(74, this.state.done + 3);
+          this.setState({ done: d, rp: d >= 74 ? 'done' : 'running' });
+          if (d >= 74) clearInterval(this.iv);
+        }, 300);
+      },
+      thrPct: s.thr, onThr: (e) => this.setState({ thr: +e.target.value }),
+      reviewShare: Math.round(4 + Math.pow((s.thr - 50) / 49, 2.2) * 70),
+      modes: [['auto', 'Auto'], ['always', 'Always'], ['off', 'Off']].map(([k, label]) => ({ label, on: s.mode === k, cls: s.mode === k ? 'on' : '', pick: () => this.setState({ mode: k }) })),
+      modeNote: MODES[s.mode],
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

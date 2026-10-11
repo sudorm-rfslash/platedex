@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Platedex · Sign in</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+body{margin:0}
+.app{--bg:#F4F5F3;--surface:#FFFFFF;--surface2:#ECEEEB;--ink:#15181C;--muted:#555C64;--line:#D7DBDD;--accent:#1D4ED8;--accent-ink:#FFFFFF;--accent-soft:#E2E9FC;--amber-bg:#FEF3C7;--amber-line:#E9B949;--amber-ink:#6E4300;--ok:#147A39;--ok-soft:#DCF2E3;--warn:#9A5200;--warn-soft:#FDEBD0;--bad:#B42318;--bad-soft:#FCE5E2;--badge:#C8291C;--badge-ink:#FFFFFF;--plate-bg:#FFFFFF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(16,24,40,.06),0 6px 20px rgba(16,24,40,.10);--map-bg:#ECEDE7;--map-water:#C9D8E0;--map-park:#DCE5D2;--map-road:#FFFFFF;--map-casing:#D3D4CC;--map-major:#F1DFB4;--map-border:#AEB2AC;--map-label:#7B8187;--map-city:#E1E2DA;font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
+.app[data-theme="dark"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--ok:#5BD68B;--ok-soft:#13301F;--warn:#F2A73B;--warn-soft:#38270E;--bad:#FF8A7E;--bad-soft:#3A1714;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1A1D20;--map-water:#1B2A35;--map-park:#1C251F;--map-road:#2D3237;--map-casing:#23272B;--map-major:#40382A;--map-border:#4A5056;--map-label:#79818A;--map-city:#202428}
+@media (prefers-color-scheme: dark){.app[data-theme="auto"]{--bg:#0E1012;--surface:#16191C;--surface2:#1F2327;--ink:#ECEEF0;--muted:#A3AAB2;--line:#2C3137;--accent:#82A6FF;--accent-ink:#0A1430;--accent-soft:#1B2747;--amber-bg:#33260B;--amber-line:#6B4E14;--amber-ink:#F4D27E;--ok:#5BD68B;--ok-soft:#13301F;--warn:#F2A73B;--warn-soft:#38270E;--bad:#FF8A7E;--bad-soft:#3A1714;--badge:#FF7A6B;--badge-ink:#240804;--plate-bg:#F2F3EF;--plate-ink:#13204A;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);--map-bg:#1A1D20;--map-water:#1B2A35;--map-park:#1C251F;--map-road:#2D3237;--map-casing:#23272B;--map-major:#40382A;--map-border:#4A5056;--map-label:#79818A;--map-city:#202428}}
+.app *{box-sizing:border-box}
+.app a{color:var(--accent)}
+.app h1,.app h2,.app h3,.app p{margin:0}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-feature-settings:"zero" 1;font-variant-numeric:slashed-zero}
+.btn{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.app a.btn{color:var(--ink)}
+.btn.primary,.app a.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.block{width:100%}
+.field{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);padding:0 12px;font:inherit;width:100%}
+.btn:focus-visible,.field:focus,.app a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.plate{display:inline-flex;align-items:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:"zero" 1;font-weight:700;letter-spacing:.06em;background:var(--plate-bg);color:var(--plate-ink);border:1.5px solid var(--plate-ink);border-radius:6px;padding:3px 9px;font-size:15px;white-space:nowrap;line-height:1.2}
+</style>
+</helmet>
+<div class="app" data-theme="{{theme}}" style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column">
+<main style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 32px 24px; gap: 28px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
+<svg width="84" height="52" viewBox="0 0 84 52" role="img" aria-label="Platedex logo"><rect x="2" y="2" width="80" height="48" rx="8" fill="none" stroke="currentColor" stroke-width="3"></rect><circle cx="13" cy="11" r="2.5" fill="currentColor"></circle><circle cx="71" cy="11" r="2.5" fill="currentColor"></circle><text x="42" y="35" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="20" letter-spacing="3" fill="currentColor">PDX</text></svg>
+<h1 style="font-size: 30px; font-weight: 800; letter-spacing: -0.01em">Platedex</h1>
+<p class="muted" style="max-width: 280px">Every plate the crew has spotted, in one shared pool.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<a href="Upload.dc.html" class="btn primary block" style="min-height: 54px; font-size: 16px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2.2"></circle><path d="M5.8 16.5a3.4 3.4 0 0 1 6.4 0M14.5 10h4M14.5 13.5h3"></path></svg>Sign in with Pocket ID</a>
+<p class="muted" style="font-size: 13px; text-align: center">Passkey sign-in through your home server</p>
+</div>
+<div class="muted" style="display: flex; align-items: center; gap: 12px; font-size: 13px"><span style="flex: 1; height: 1px; background: var(--line)"></span><span>or use a password</span><span style="flex: 1; height: 1px; background: var(--line)"></span></div>
+<form style="display: flex; flex-direction: column; gap: 14px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 14px">Username<input class="field" autocomplete="username" placeholder="alex"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 14px">Password<input class="field" type="password" autocomplete="current-password" placeholder="••••••••"></label>
+<a href="Upload.dc.html" class="btn block" style="margin-top: 4px">Sign in</a>
+</form>
+</main>
+<p class="muted" style="text-align: center; font-size: 12px; padding: 0 0 28px">Self-hosted · invite only</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["auto","light","dark"],"default":"auto"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'auto' };
+  }
+}
+</script>
+</body>
+</html>
