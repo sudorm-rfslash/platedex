@@ -1,17 +1,4 @@
-import pytest
-from conftest import make_admin
 
-from platedex.db import db_session
-from platedex.seed import seed_demo
-
-
-@pytest.fixture()
-def seeded(client):
-    make_admin(client, "alex", "password123")
-    with db_session() as db:
-        out = seed_demo(db)
-    assert out["sightings"] == 60  # 59 from the design + 1 GR8FU1 misread
-    return client
 
 
 def texts(r):
@@ -123,3 +110,21 @@ def test_meta_and_exports(seeded):
     assert csv_text.count("\n") == 8  # header + 6 GR8FUL + the GR8FU1 look-alike
     geo = seeded.get("/api/export.geojson").json()
     assert len(geo["features"]) == 48
+
+
+def test_delete_plate_also_removes_plates_merged_into_it(seeded):
+    plates = seeded.get("/api/plates").json()["plates"]
+    target = next(p for p in plates if p["text"] == "GR8FUL")
+    source = next(p for p in plates if p["text"] == "GR8FU1")
+    assert seeded.post(f"/api/plates/{target['id']}/merge", json={"source_id": source["id"]}).status_code == 200
+    r = seeded.delete(f"/api/plates/{target['id']}")
+    assert r.json()["toast"] == "Deleted GR8FUL and 7 sightings"
+    assert seeded.get(f"/api/plates/{source['id']}").status_code == 404
+    body = seeded.get("/api/plates").json()
+    assert len(body["plates"]) == 14 and body["sightings"] == 53
+
+
+def test_members_only_can_delete(seeded):
+    plate = seeded.get("/api/plates").json()["plates"][0]
+    seeded.post("/api/auth/logout")
+    assert seeded.delete(f"/api/plates/{plate['id']}").status_code in (401, 403)

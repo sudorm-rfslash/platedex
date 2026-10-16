@@ -24,7 +24,7 @@
 		error = '';
 		try {
 			session.me = await api.post('/api/auth/register', { token, username, password });
-			goto('/upload', { replaceState: true });
+			goto('/', { replaceState: true });
 		} catch (err) {
 			error = errorText(err);
 		} finally {

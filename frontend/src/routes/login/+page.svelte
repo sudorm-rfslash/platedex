@@ -12,7 +12,11 @@
 	let error = $state(page.url.searchParams.get('error') || '');
 	let busy = $state(false);
 
-	const next = $derived(page.url.searchParams.get('next') || '/upload');
+	// Only same-site paths: "//host" or "/\\host" would leave the app after sign-in.
+	const next = $derived.by(() => {
+		const n = page.url.searchParams.get('next') || '/';
+		return n.startsWith('/') && !n.startsWith('//') && !n.startsWith('/\\') ? n : '/';
+	});
 	const cfg = $derived(session.config);
 	const setup = $derived(!!cfg?.needs_setup);
 
@@ -27,7 +31,7 @@
 		error = '';
 		try {
 			session.me = await api.post(setup ? '/api/auth/setup' : '/api/auth/login', { username, password });
-			goto(next.startsWith('/') ? next : '/upload', { replaceState: true });
+			goto(next, { replaceState: true });
 		} catch (err) {
 			error = errorText(err);
 		} finally {

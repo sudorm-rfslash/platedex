@@ -13,6 +13,7 @@
 	let { children }: LayoutProps = $props();
 
 	const NAV = [
+		{ href: '/', label: 'Home', icon: 'home' },
 		{ href: '/upload', label: 'Upload', icon: 'upload' },
 		{ href: '/review', label: 'Review', icon: 'review' },
 		{ href: '/plates', label: 'Plates', icon: 'plates' },
@@ -29,7 +30,8 @@
 		return () => stop?.();
 	});
 
-	const active = (href: string) => page.url.pathname === href || page.url.pathname.startsWith(href + '/');
+	const active = (href: string) =>
+		href === '/' ? page.url.pathname === '/' : page.url.pathname === href || page.url.pathname.startsWith(href + '/');
 	const roleLabel = $derived(session.me ? session.me.role[0].toUpperCase() + session.me.role.slice(1) : '');
 
 	async function signOut() {
@@ -46,7 +48,7 @@
 {#if session.me}
 	<div class="shell">
 		<nav class="side" aria-label="Main">
-			<a href="/upload" class="brand"><Logo width={40} /><span>Platedex</span></a>
+			<a href="/" class="brand"><Logo width={40} /><span>Platedex</span></a>
 			{#each NAV as n}
 				<a class="nav" class:on={active(n.href)} href={n.href} aria-current={active(n.href) ? 'page' : undefined}>
 					<Icon name={n.icon} />{n.label}
@@ -92,7 +94,7 @@
 	}
 	.tabbar {
 		display: grid;
-		grid-template-columns: repeat(5, minmax(0, 1fr));
+		grid-template-columns: repeat(6, minmax(0, 1fr));
 		border-top: 1px solid var(--line);
 		background: var(--surface);
 		padding-bottom: max(8px, var(--safe-bottom));

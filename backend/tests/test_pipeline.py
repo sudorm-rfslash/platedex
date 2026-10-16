@@ -23,14 +23,6 @@ def upload(client, data=None, name="IMG_1.HEIC", **form):
     return r.json()
 
 
-@pytest.fixture()
-def no_vlm(monkeypatch):
-    def unavailable(*_a, **_k):
-        raise vlm_mod.VlmUnavailable("off in tests")
-
-    monkeypatch.setattr(vlm_mod, "read_plate", unavailable)
-
-
 def vlm_says(monkeypatch, text, conf=0.9, state="TX"):
     calls = []
 
@@ -333,3 +325,16 @@ def test_no_ollama_url_means_ocr_only(client, fake_engine, monkeypatch):
     drain()
     assert not calls, "without OLLAMA_URL the AI reader is never asked"
     assert vlm_mod.status()["configured"] is False
+
+
+def test_delete_plate_removes_sightings_and_keeps_photo_out_of_review(client, fake_engine, no_vlm):
+    make_admin(client)
+    p = upload(client)
+    drain()
+    plate = client.get("/api/plates").json()["plates"][0]
+    r = client.delete(f"/api/plates/{plate['id']}")
+    assert r.status_code == 200 and r.json()["toast"] == "Deleted GR8FUL and 1 sighting"
+    assert client.get(f"/api/plates/{plate['id']}").status_code == 404
+    assert client.get("/api/plates").json()["plates"] == []
+    assert client.get(f"/api/photos?ids={p['id']}").json()[0]["status"] == "done"
+    assert client.get("/api/review/queue?tab=identify").json()["items"] == []

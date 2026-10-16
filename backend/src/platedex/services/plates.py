@@ -1,4 +1,4 @@
-"""Plate identity: attaching sightings, duplicate suggestions, merge/undo and split."""
+"""Plate identity: attaching sightings, duplicate suggestions, merge/undo, split and delete."""
 
 from datetime import timedelta
 
@@ -7,7 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..db import utcnow
-from ..models import Detection, DismissedDuplicate, Photo, Plate, PlateMerge, Sighting, User
+from ..models import REJECTED, Detection, DismissedDuplicate, Photo, Plate, PlateMerge, Sighting, User
 from .geo import haversine_mi
 from .platetext import clean_display, is_partial, lookalike_pairs, normalize, partial_matches, skeleton
 
@@ -258,3 +258,28 @@ def split(
         s.plate_id = target.id
     db.flush()
     return target
+
+
+def delete_plate(db: Session, plate: Plate, user: User) -> int:
+    """Delete a plate and its sightings. Photos stay; their detections are marked rejected so they
+    don't come back into Review. Plates merged into this one go too. Returns the sighting count."""
+    from ..pipeline.process import update_photo_status  # process imports this module
+
+    plate_ids = [plate.id, *db.scalars(select(Plate.id).where(Plate.merged_into_id == plate.id))]
+    sighting_ids = list(db.scalars(select(Sighting.id).where(Sighting.plate_id.in_(plate_ids))))
+    photos: set[Photo] = set()
+    for det in db.scalars(select(Detection).where(Detection.sighting_id.in_(sighting_ids))):
+        det.sighting_id = None
+        det.status, det.reason = REJECTED, "Plate deleted"
+        det.reviewed_by_id, det.reviewed_at = user.id, utcnow()
+        det.claimed_by_id = det.claimed_at = None
+        photos.add(det.photo)
+    for s in db.scalars(select(Sighting).where(Sighting.id.in_(sighting_ids))):
+        db.delete(s)
+    for p in db.scalars(select(Plate).where(Plate.id.in_(plate_ids))):
+        db.delete(p)
+    db.flush()
+    for photo in photos:
+        db.refresh(photo)
+        update_photo_status(photo)
+    return len(sighting_ids)

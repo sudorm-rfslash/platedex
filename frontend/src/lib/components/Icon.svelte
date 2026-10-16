@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Stroke icons lifted from the design prototype.
 	const P: Record<string, string> = {
+		home: '<path d="M4 11 12 4l8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
 		upload: '<path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/>',
 		review: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 12l3 3 5-6"/>',
 		plates: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6.5 12h3M12 12h5.5"/>',

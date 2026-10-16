@@ -282,7 +282,7 @@ async def oidc_callback(request: Request, db: Session = Depends(get_db)):
     u.last_active_at = utcnow()
     db.commit()
     login_session(request, u)
-    return RedirectResponse("/upload", status_code=302)
+    return RedirectResponse("/", status_code=302)
 
 
 @router.post("/oidc/unlink")

@@ -48,6 +48,30 @@ export function dateTime(iso: string | null | undefined, tz?: string | null): st
 	return `${shortDate(iso, tz)}, ${timeOf(iso, tz)}`;
 }
 
+/** "2026-10-09": the calendar day in the sighting's own time zone (or the browser's for "now"). */
+export function dayKey(iso: string | null | undefined, tz?: string | null): string {
+	if (!iso) return '';
+	const p = parts(iso, tz);
+	return `${p.y}-${String(p.m + 1).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
+}
+
+/** Day heading: "Today", "Yesterday", or "Fri, Oct 2" / "Friday, Oct 2" (with the year if not this one). */
+export function dayLabel(key: string, weekday: 'short' | 'long' = 'short'): string {
+	if (!key) return 'Unknown date';
+	const now = new Date();
+	const yesterday = new Date(now.getTime() - 86400000);
+	if (key === dayKey(now.toISOString())) return 'Today';
+	if (key === dayKey(yesterday.toISOString())) return 'Yesterday';
+	const [y, m, d] = key.split('-').map(Number);
+	const date = new Date(y, m - 1, d);
+	return date.toLocaleDateString('en-US', {
+		weekday,
+		month: 'short',
+		day: 'numeric',
+		year: y !== now.getFullYear() ? 'numeric' : undefined
+	});
+}
+
 export function ago(iso: string | null | undefined): string {
 	if (!iso) return 'never';
 	const s = (Date.now() - new Date(iso).getTime()) / 1000;

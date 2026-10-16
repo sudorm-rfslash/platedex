@@ -31,6 +31,7 @@
 	let splitText = $state('');
 	let splitOpen = $state(false);
 	let editOpen = $state(false);
+	let deleteOpen = $state(false);
 	let edit = $state({ text: '', state: '', meaning: '' });
 	let notesEditing = $state(false);
 	let notesDraft = $state('');
@@ -137,6 +138,18 @@
 		}
 	}
 
+	async function doDelete() {
+		if (!plate) return;
+		try {
+			const r = await api.del(`/api/plates/${plate.id}`);
+			deleteOpen = false;
+			flash(r.toast);
+			goto('/plates');
+		} catch (e) {
+			flash(errorText(e));
+		}
+	}
+
 	function openEdit() {
 		if (!plate) return;
 		edit = { text: plate.text, state: plate.state ?? '??', meaning: plate.meaning ?? '' };
@@ -167,6 +180,7 @@
 				<button class="btn ghost" onclick={openEdit}><Icon name="edit" size={18} /><span class="desk-only">Edit</span></button>
 				<button class="btn ghost" onclick={startSplit}><Icon name="split" size={18} />{splitting ? 'Cancel' : 'Split'}</button>
 				<button class="btn ghost" onclick={() => (plate?.duplicates.length ? dupEl?.scrollIntoView({ behavior: 'smooth', block: 'center' }) : flash('No likely duplicates for this plate'))}><Icon name="merge" size={18} />Merge</button>
+				<button class="btn ghost" style="color: var(--bad)" onclick={() => (deleteOpen = true)}><Icon name="trash" size={18} />Delete</button>
 			</div>
 		{/if}
 	</header>
@@ -288,6 +302,11 @@
 	<p class="muted" style="font-size: 14px">{plural(sel.length, 'sighting')} will move to the plate below. If that plate already exists, they join it.</p>
 	<label class="fl">New plate text<input class="field mono" style="font-size: 20px; font-weight: 700; letter-spacing: 0.08em" bind:value={splitText} oninput={(e) => (splitText = e.currentTarget.value.toUpperCase())} /></label>
 	<button class="btn primary block" onclick={doSplit} disabled={!splitText.trim()}>Split</button>
+</Sheet>
+
+<Sheet bind:open={deleteOpen} title="Delete {plate?.text ?? 'plate'}?">
+	<p class="muted" style="font-size: 14px">This removes the plate and its {plural(plate?.n ?? 0, 'sighting')} for everyone. The photos stay but won't be read as this plate again. This can't be undone.</p>
+	<div class="row"><button class="btn grow" onclick={() => (deleteOpen = false)}>Cancel</button><button class="btn dangerfill grow" onclick={doDelete}>Delete plate</button></div>
 </Sheet>
 
 <Sheet bind:open={editOpen} title="Edit plate">

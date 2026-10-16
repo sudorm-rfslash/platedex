@@ -13,6 +13,9 @@ from ..db import get_db
 from ..models import Plate, PlateMerge, Sighting, User
 from ..security import current_user, member
 from ..services import plates as plate_svc
+from ..services.feed import SORTS as FEED_SORTS
+from ..services.feed import FeedFilters, feed
+from ..services.feed import Item as FeedItem
 from ..services.listing import Filters, missing_location_count, plate_rows, sighting_rows
 from ..services.platetext import US_STATES, clean_display, is_partial, normalize, normalize_state, skeleton
 from .serialize import iso, plate_brief, sighting_json, user_json
@@ -85,6 +88,49 @@ def list_sightings(f: Filters = Depends(filters), limit: int = 500, user: User =
     rows = sighting_rows(db, f)
     return {"sightings": [sighting_json(s) for s in rows[:limit]], "total": len(rows),
             "missing_location": missing_location_count(db)}
+
+
+def _feed_json(i: FeedItem) -> dict:
+    return {
+        "key": i.key,
+        "at": iso(i.at),
+        "tz": i.tz,
+        "user": user_json(i.user),
+        "place": i.place,
+        "located": i.lat is not None,
+        "thumb_url": f"/api/photos/{i.photo_id}/thumb" if i.photo_id else None,
+        "plate": plate_brief(i.plate) if i.plate else None,
+        "n": i.n,
+        "pending": i.pending,
+    }
+
+
+@router.get("/feed")
+def home_feed(
+    sort: str = "new",
+    who: str = "all",
+    date_from: date | None = Query(None, alias="from"),
+    date_to: date | None = Query(None, alias="to"),
+    states: str | None = None,
+    vanity: bool = False,
+    review: bool = False,
+    missing: bool = False,
+    offset: int = Query(0, ge=0),
+    limit: int = Query(48, ge=1, le=200),
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    f = FeedFilters(sort=sort if sort in FEED_SORTS else "new", who=who, date_from=date_from, date_to=date_to,
+                    states=[s.upper() for s in _csv(states)], vanity=vanity, review=review, missing=missing)
+    items = feed(db, f, user)
+    page = items[offset:offset + limit]
+    return {
+        "items": [_feed_json(i) for i in page],
+        "total": len(items),
+        "plates": len({i.plate.id for i in items if i.plate}),
+        "spotters": len({i.user.id for i in items}),
+        "next_offset": offset + limit if offset + limit < len(items) else None,
+    }
 
 
 @router.get("/map/points")
@@ -249,6 +295,15 @@ def split(plate_id: int, body: SplitBody, user: User = Depends(member), db: Sess
     db.commit()
     n = len(body.sighting_ids)
     return {"plate_id": new.id, "toast": f"Split {n} sighting{'s' if n != 1 else ''} into {new.text}"}
+
+
+@router.delete("/plates/{plate_id}")
+def delete_plate(plate_id: int, user: User = Depends(member), db: Session = Depends(get_db)):
+    p = _plate(db, plate_id)
+    text = p.text
+    n = plate_svc.delete_plate(db, p, user)
+    db.commit()
+    return {"ok": True, "toast": f"Deleted {text} and {n} sighting{'s' if n != 1 else ''}"}
 
 
 @router.get("/meta")

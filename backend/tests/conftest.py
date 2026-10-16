@@ -137,3 +137,26 @@ def jpeg(gps: tuple[float, float] | None = (30.2672, -97.7431), when: str | None
     buf = BytesIO()
     img.save(buf, fmt, exif=exif.tobytes())
     return buf.getvalue()
+
+
+@pytest.fixture()
+def seeded(client):
+    """Signed in as alex (admin) with the demo plates loaded."""
+    from platedex.db import db_session
+    from platedex.seed import seed_demo
+
+    make_admin(client, "alex", "password123")
+    with db_session() as db:
+        out = seed_demo(db)
+    assert out["sightings"] == 60  # 59 from the design + 1 GR8FU1 misread
+    return client
+
+
+@pytest.fixture()
+def no_vlm(monkeypatch):
+    from platedex.pipeline import vlm as vlm_mod
+
+    def unavailable(*_a, **_k):
+        raise vlm_mod.VlmUnavailable("off in tests")
+
+    monkeypatch.setattr(vlm_mod, "read_plate", unavailable)
