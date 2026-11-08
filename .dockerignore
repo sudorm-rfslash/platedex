@@ -10,3 +10,6 @@ data
 design
 *.db
 .env
+frontend/e2e/
+frontend/test-results/
+frontend/playwright-report/
