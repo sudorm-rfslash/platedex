@@ -338,3 +338,37 @@ def test_delete_plate_removes_sightings_and_keeps_photo_out_of_review(client, fa
     assert client.get("/api/plates").json()["plates"] == []
     assert client.get(f"/api/photos?ids={p['id']}").json()[0]["status"] == "done"
     assert client.get("/api/review/queue?tab=identify").json()["items"] == []
+
+
+def test_reupload_after_plate_delete_reads_the_photo_again(client, fake_engine, no_vlm):
+    make_admin(client)
+    data = jpeg()
+    upload(client, data)
+    drain()
+    plate = client.get("/api/plates").json()["plates"][0]
+    assert client.delete(f"/api/plates/{plate['id']}").status_code == 200
+    assert client.get("/api/plates").json()["plates"] == []
+    assert client.get("/api/review/counts").json()["badge"] == 0  # deleted plates don't come back into Review
+
+    again = upload(client, data, name="same-photo.jpg")
+    assert again["duplicate"] is False and again["status"] == "queued" and again["id"] == plate_photo_id(client)
+    drain()
+    assert [p["text"] for p in client.get("/api/plates").json()["plates"]] == ["GR8FUL"]
+
+
+def test_reupload_of_reviewed_photo_stays_a_duplicate(client, fake_engine, no_vlm):
+    make_admin(client)
+    fake_engine.boxes = []
+    data = jpeg()
+    upload(client, data)
+    drain()
+    q = client.get("/api/review/queue?tab=identify").json()
+    item = client.post(f"/api/review/items/{q['items'][0]['id']}/claim").json()
+    assert client.post(f"/api/review/items/{item['id']}/no-plate").status_code == 200
+    again = upload(client, data)
+    assert again["duplicate"] is True
+    assert drain() == 0
+
+
+def plate_photo_id(client):
+    return client.get("/api/photos").json()[-1]["id"]
