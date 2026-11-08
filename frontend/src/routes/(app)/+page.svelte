@@ -304,7 +304,7 @@
 						{/if}
 						<div class="meta">
 							<Avatar user={it.user} size={20} />
-							<span class="t"><span class="desk-only">{it.user.username} · </span>{when(it)} · {where(it)}</span>
+							<span class="t"><span class="desk-only">{`${it.user.username} · `}</span>{when(it)} · {where(it)}</span>
 						</div>
 					</a>
 				{/each}

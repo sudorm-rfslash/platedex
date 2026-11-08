@@ -5,7 +5,9 @@ import signal
 import threading
 import time
 import traceback
+from pathlib import Path
 
+from fastapi import HTTPException
 from sqlalchemy import select
 
 from .config import get_settings
@@ -81,6 +83,7 @@ def scan_import_dir() -> int:
     from .api.photos import ingest
 
     done_dir = s.import_dir / ".imported"
+    failed_dir = s.import_dir / ".failed"
     n = 0
     with db_session() as db:
         user = db.scalar(select(User).where(User.username == s.import_user))
@@ -88,20 +91,30 @@ def scan_import_dir() -> int:
             log.warning("IMPORT_USER %s doesn't exist; skipping import folder", s.import_user)
             return 0
         for path in sorted(s.import_dir.rglob("*")):
-            if done_dir in path.parents or not path.is_file() or path.suffix.lower() not in IMAGE_EXT:
+            if done_dir in path.parents or failed_dir in path.parents:
+                continue
+            if not path.is_file() or path.suffix.lower() not in IMAGE_EXT:
                 continue
             if time.time() - path.stat().st_mtime < 10:
                 continue  # still being written by the sync tool
             try:
                 ingest(db, user, path.read_bytes(), path.name, capture_mode="import")
-                dest = done_dir / path.relative_to(s.import_dir)
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                path.rename(dest)
+                _move(path, done_dir / path.relative_to(s.import_dir))
                 n += 1
+            except HTTPException as e:
+                # Not a photo we can read: set it aside instead of retrying it every scan.
+                db.rollback()
+                log.warning("Import of %s failed: %s. Moved to %s", path, e.detail, failed_dir)
+                _move(path, failed_dir / path.relative_to(s.import_dir))
             except Exception as e:  # noqa: BLE001
                 db.rollback()
                 log.warning("Import of %s failed: %s", path, e)
     return n
+
+
+def _move(src: Path, dest: Path) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    src.rename(dest)
 
 
 def main() -> None:

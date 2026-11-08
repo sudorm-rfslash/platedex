@@ -260,9 +260,13 @@ def split(
     return target
 
 
+R_PLATE_DELETED = "Plate deleted"
+
+
 def delete_plate(db: Session, plate: Plate, user: User) -> int:
     """Delete a plate and its sightings. Photos stay; their detections are marked rejected so they
-    don't come back into Review. Plates merged into this one go too. Returns the sighting count."""
+    don't come back into Review. Uploading such a photo again reads it again (see `ingest`).
+    Plates merged into this one go too. Returns the sighting count."""
     from ..pipeline.process import update_photo_status  # process imports this module
 
     plate_ids = [plate.id, *db.scalars(select(Plate.id).where(Plate.merged_into_id == plate.id))]
@@ -270,7 +274,7 @@ def delete_plate(db: Session, plate: Plate, user: User) -> int:
     photos: set[Photo] = set()
     for det in db.scalars(select(Detection).where(Detection.sighting_id.in_(sighting_ids))):
         det.sighting_id = None
-        det.status, det.reason = REJECTED, "Plate deleted"
+        det.status, det.reason = REJECTED, R_PLATE_DELETED
         det.reviewed_by_id, det.reviewed_at = user.id, utcnow()
         det.claimed_by_id = det.claimed_at = None
         photos.add(det.photo)

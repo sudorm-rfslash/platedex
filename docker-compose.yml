@@ -3,7 +3,7 @@
 # Apply changes with `docker compose up -d`.
 services:
   platedex:
-    image: ghcr.io/sudorm-rfslash/platedex:latest
+    image: ghcr.io/sudorm-rfslash/platedex:0.1   # release line; see README → Quick start → Update
     container_name: platedex
     restart: unless-stopped
     environment:

@@ -305,7 +305,7 @@
 </Sheet>
 
 <Sheet bind:open={deleteOpen} title="Delete {plate?.text ?? 'plate'}?">
-	<p class="muted" style="font-size: 14px">This removes the plate and its {plural(plate?.n ?? 0, 'sighting')} for everyone. The photos stay but won't be read as this plate again. This can't be undone.</p>
+	<p class="muted" style="font-size: 14px">This removes the plate and its {plural(plate?.n ?? 0, 'sighting')} for everyone. The photos stay but drop out of Home and Review. To get a plate back, upload its photo again.</p>
 	<div class="row"><button class="btn grow" onclick={() => (deleteOpen = false)}>Cancel</button><button class="btn dangerfill grow" onclick={doDelete}>Delete plate</button></div>
 </Sheet>
 

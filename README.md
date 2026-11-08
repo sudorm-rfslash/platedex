@@ -1,7 +1,7 @@
 # Platedex
 
 > [!WARNING]
-> **Under heavy development. Not ready for use.** Things break, the database may change without a migration path, and there are no releases yet. Don't use it for data you want to keep.
+> **Early release (0.x).** Expect rough edges and breaking changes between minor versions. Database changes ship as migrations that run on start, but [back up](#backup-and-admin-commands) before you update.
 
 Self-hosted license plate log for a group of friends. Upload a phone photo of a US plate. Platedex reads the plate, pulls the GPS location and time from the photo, and links every sighting of that plate across dates, places and people.
 
@@ -23,8 +23,11 @@ Needs Docker with Compose and an `amd64` host. No GPU needed.
 
 **Update:**
 ```sh
+docker compose exec platedex platedex backup   # optional but recommended
 docker compose pull && docker compose up -d
 ```
+
+The compose file follows a release line (`:0.1` gets 0.1.x fixes). To move to a newer line, change the tag in `image:`. Read [CHANGELOG.md](CHANGELOG.md) first. `:latest` follows `main` and isn't a release.
 
 ## AI reader (optional)
 
@@ -117,7 +120,7 @@ Add variables under `environment:` in `docker-compose.yml`, then run `docker com
 | Variable | Default | Lockable | Description |
 |---|---|---|---|
 | `MAX_UPLOAD_MB` | `25` | ✓ | Largest accepted photo (1–500 MB). |
-| `IMPORT_DIR` | — | | Watch folder inside the container (for example `/import`). Uncomment its volume in `docker-compose.yml`. |
+| `IMPORT_DIR` | — | | Watch folder inside the container (for example `/import`). Uncomment its volume in `docker-compose.yml`. Imported files move to `.imported/`, unreadable ones to `.failed/`. |
 | `IMPORT_USER` | — | | Username that watch-folder photos are credited to. |
 | `SHORTCUT_URL` | — | ✓ | iCloud link to the iOS Shortcut. See [iOS Shortcut](#ios-shortcut). |
 
@@ -287,7 +290,17 @@ DATA_DIR=./data uv run platedex worker &
 
 # frontend (proxies /api to :8080)
 cd frontend && npm install && npm run dev
+
+# end-to-end tests: builds the web app, starts a throwaway API and worker, runs Playwright
+cd backend && uv run platedex download-models   # once
+cd frontend && npx playwright install chromium && npm run test:e2e
 ```
+
+CI (`.github/workflows/ci.yml`) runs ruff, pytest, svelte-check, the build and the end-to-end tests. The Docker image is only published when they pass.
+
+**Changing the database:** edit `models.py`, then run `DATA_DIR=./data uv run platedex new-migration "what changed"` and read the generated file in `migrations/versions/`. `tests/test_migrations.py` fails when the models and migrations differ, and checks that every revision upgrades a database with data in it.
+
+**Releasing:** move the `Unreleased` notes in `CHANGELOG.md` under the new version, bump `version` in `backend/pyproject.toml` and the `image:` tag in `docker-compose.yml` if the minor version changes, merge to `main`, then tag it: `git tag v0.1.0 && git push origin v0.1.0`. CI publishes `:0.1.0` and `:0.1`.
 
 - Build the image locally: `docker build -t platedex .`
 - Place names: `platedex prepare-geo cities5000.zip` (the Docker build does this).

@@ -1,5 +1,5 @@
-# Builds the Platedex image and pushes it to ghcr.io/sudorm-rfslash/platedex.
-# main -> :latest and :sha-<short>, tag vX.Y.Z -> :X.Y.Z and :X.Y
+# Builds the Platedex image and pushes it to ghcr.io/sudorm-rfslash/platedex, after CI passes.
+# main -> :latest and :sha-<short>, tag vX.Y.Z -> :X.Y.Z, :X.Y and :sha-<short>
 name: Docker image
 
 on:
@@ -17,7 +17,11 @@ permissions:
   packages: write
 
 jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       # Leaves room for the build on the runner's small disk.

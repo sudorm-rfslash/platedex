@@ -7,10 +7,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import Detection, Photo, Sighting, User
+from ..models import REJECTED, Detection, Photo, Sighting, User
 from ..security import current_user, member
 from ..services import appsettings, geo, jobs, storage
 from ..services.exif import parse_client_time, read_meta
+from ..services.plates import R_PLATE_DELETED
 from .serialize import photo_json
 
 router = APIRouter(prefix="/api", tags=["photos"])
@@ -23,6 +24,11 @@ def _float(v: str | None) -> float | None:
         return float(v) if v not in (None, "") else None
     except ValueError:
         return None
+
+
+def _only_deleted_plates(photo: Photo) -> bool:
+    dets = photo.detections
+    return bool(dets) and all(d.status == REJECTED and d.reason == R_PLATE_DELETED for d in dets)
 
 
 def ingest(
@@ -43,7 +49,16 @@ def ingest(
     sha = hashlib.sha256(data).hexdigest()
     existing = db.scalar(select(Photo).where(Photo.sha256 == sha))
     if existing is not None:
-        return existing, False
+        if not _only_deleted_plates(existing):
+            return existing, False
+        # Every plate in this photo was deleted. Uploading it again means "read it again".
+        for det in list(existing.detections):
+            db.delete(det)
+        existing.status, existing.error = "queued", None
+        db.flush()
+        jobs.enqueue(db, "process_photo", {"photo_id": existing.id})
+        db.commit()
+        return existing, True
     meta = read_meta(data)
     if meta.width is None:
         raise HTTPException(

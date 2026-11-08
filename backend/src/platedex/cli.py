@@ -4,8 +4,7 @@ import sys
 from pathlib import Path
 
 
-def _migrate() -> None:
-    from alembic import command
+def _alembic_config():
     from alembic.config import Config
 
     from .config import get_settings
@@ -15,13 +14,34 @@ def _migrate() -> None:
     cfg = Config()
     cfg.set_main_option("script_location", str(Path(__file__).parent / "migrations"))
     cfg.set_main_option("sqlalchemy.url", s.db_url)
-    command.upgrade(cfg, "head")
+    return cfg
+
+
+def _migrate() -> None:
+    from alembic import command
+
+    command.upgrade(_alembic_config(), "head")
+
+
+def _new_migration(message: str) -> None:
+    """Write the next numbered migration from the difference between the models and the database."""
+    from alembic import command
+    from alembic.script import ScriptDirectory
+
+    cfg = _alembic_config()
+    _migrate()  # compare against a database that is at head
+    head = ScriptDirectory.from_config(cfg).get_current_head()
+    rev_id = f"{int(head or 0) + 1:04d}"
+    script = command.revision(cfg, message=message, autogenerate=True, rev_id=rev_id)
+    print(f"Wrote {script.path}. Read it, adjust it, and run `platedex migrate` to apply it.")
 
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="platedex")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("migrate", help="Create or upgrade the database")
+    nm = sub.add_parser("new-migration", help="Development: write a migration for model changes")
+    nm.add_argument("message", help='Short description, for example "add plate nickname"')
     sub.add_parser("worker", help="Run the background worker")
     sd = sub.add_parser("seed-demo", help="Load the demo plates and users from the design prototype")
     sd.add_argument("--password", default="platedex-demo")
@@ -49,6 +69,8 @@ def main(argv: list[str] | None = None) -> None:
             names = sync_env(db)
         if names:
             print("Locked by environment (read-only in More → Admin): " + ", ".join(names))
+    elif args.cmd == "new-migration":
+        _new_migration(args.message)
     elif args.cmd == "worker":
         from .worker import main as worker_main
 
